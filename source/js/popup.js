@@ -19,6 +19,7 @@ var server = "http://" + localStorage["server"] + ":" + localStorage["port"] + "
 
 var playing = "";
 var length = "";
+var fullscreen;
 
 function update(){
 	console.log("update");
@@ -42,6 +43,7 @@ function processUpdate(data, status, jqXHR) {
 	length = $("length", data).text();
 	$("#audioDelay").attr("value", $("audiodelay", data).text())
 	$("#aspectratio").attr("value", $("aspectratio", data).text())
+	fullscreen = $("fullscreen", data).text();
 	refreshPlaylist();
 }
 
@@ -50,6 +52,23 @@ function setVolume(volume) {
 	$.ajax(
 		{
 		url:		server+"requests/status.xml?command=volume&val="+volume,
+		datatype:	"xml",
+		success:	function (data, status, jqXHR) {
+						processUpdate(data, status, jqXHR);
+					}
+		}
+	);
+}
+
+function toggleFullscreen() {
+	setFullscreen(fullscreen == "false");
+}
+
+function setFullscreen(fs) {
+	console.log("fullscreen "+fs);
+	$.ajax(
+		{
+		url:		server+"requests/status.xml?command=fullscreen&val="+fs,
 		datatype:	"xml",
 		success:	function (data, status, jqXHR) {
 						processUpdate(data, status, jqXHR);
@@ -205,6 +224,7 @@ $(function() {
 	$("#position")			.on("change",	function(event){ seek();							});
 	$("#volume")			.on("change",	function(event){ setVolume($(this).attr("value"));	});
 	$("#aspectratio")		.on("change",	function(event){ setAR();							});
+	$("#fullscreen")		.on("click",	function(event){ toggleFullscreen();				});
 	update();
 	//refreshPlaylist();
 });
