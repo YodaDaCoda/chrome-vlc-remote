@@ -1,0 +1,12 @@
+Chrome VLC Remote
+
+2013-04-08 v0.0.2 Initial Github Release
+* HTML5 compliance.
+* Restructured files.
+
+2013-04-08 v0.0.1 Initial Development.
+* Basic functionality working.
+* Display currently playing file
+* Display playlist
+* Options to set volume, aspect ratio, audio delay, seek
+
