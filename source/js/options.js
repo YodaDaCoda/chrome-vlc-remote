@@ -8,9 +8,7 @@ function save() {
 	}
 
 	$("#status").text("Settings saved.");
-	setTimeout(function() {
-		$("#status").text("\xa0");
-	}, 750);
+	$("#status").fadeOut(750);
 }
 
 function restore() {

@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>
-			VLC Remote for Chrome
-		</title>
+		<title>VLC Remote for Chrome</title>
 		<meta charset="UTF-8">
-		<script type="text/javascript" src="./jquery-1.8.3.min.js"></script>
-		<script type="text/javascript" src="./popup.js"></script>
-		<link rel="stylesheet" type="text/css" href="./theme.css">
+		<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+		<script type="text/javascript" src="js/popup.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/popup.css">
 	</head>
 	<body>
 		<div class="wide">
@@ -17,9 +15,9 @@
 				<div id="length" class="right"></div>
 				<br />
 				<div class="centered">
-					<button type="button" id="previous"><--</button><!--
-					--><button type="button" id="m1m"><<</button><!--
-					--><button type="button" id="m10s"><</button><!--
+					<button type="button" id="previous">&lt;--</button><!--
+					--><button type="button" id="m1m">&lt;&lt;</button><!--
+					--><button type="button" id="m10s">&lt;</button><!--
 					--><input type="range" min="0" max="1" step="0.001" value="0" id="position" class="wide"><!--
 					--><button type="button" id="p10s">></button><!--
 					--><button type="button" id="p1m">>></button><!--
@@ -39,7 +37,7 @@
 				</div>
 				Audio Delay:
 				<button type="button" id="audioDelayMinus">-</button>
-				<input type="text" id="audioDelay" size=1></input>
+				<input type="text" id="audioDelay" size=1>
 				<button type="button" id="audioDelayPlus">+</button>
 				<br />
 				Aspect ratio:
