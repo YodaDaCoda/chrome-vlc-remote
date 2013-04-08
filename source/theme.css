@@ -1,0 +1,32 @@
+.centered {
+	text-align:		center;
+	margin-left:	auto;
+	margin-right:	auto;
+	width:			500px;
+}
+
+div.wide {
+	width:			500px;
+}
+.wide {
+	margin-left:	0px;
+	margin-right:	0px;
+	width:			384px;
+}
+
+.left {
+	float:			left;
+}
+.right {
+	float:			right;
+}
+
+button {
+	padding-left:	1px;
+	padding-right:	1px;
+	margin-left:	0px;
+	margin-right:	0px;
+}
+
+.selected {
+}

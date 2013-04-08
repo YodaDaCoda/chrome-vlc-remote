@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>
+			VLC Remote for Chrome
+		</title>
+		<meta charset="UTF-8">
+		<script type="text/javascript" src="./jquery-1.8.3.min.js"></script>
+		<script type="text/javascript" src="./popup.js"></script>
+		<link rel="stylesheet" type="text/css" href="./theme.css">
+	</head>
+	<body>
+		<div class="wide">
+			<div id="controls" class="wide">
+				<div id="file" class="centered"></div>
+				<div id="time" class="left"></div>
+				<div id="length" class="right"></div>
+				<br />
+				<div class="centered">
+					<button type="button" id="previous"><--</button><!--
+					--><button type="button" id="m1m"><<</button><!--
+					--><button type="button" id="m10s"><</button><!--
+					--><input type="range" min="0" max="1" step="0.001" value="0" id="position" class="wide"><!--
+					--><button type="button" id="p10s">></button><!--
+					--><button type="button" id="p1m">>></button><!--
+					--><button type="button" id="next">--></button>
+				</div>
+				<div class="centered">
+					<button type="button" id="play">Play</button>
+					<button type="button" id="pause">Pause</button>
+					<button type="button" id="stop">Stop</button>
+				</div>
+				<div class="centered">
+					<button type="button" id="voldd">--</button><!--
+					--><button type="button" id="vold">-</button><!--
+					--><input type="range" id="volume" min="0" max="1024" value="0" class="wide"><!--
+					--><button type="button" id="volu">+</button><!--
+					--><button type="button" id="voluu">++</button>
+				</div>
+				Audio Delay:
+				<button type="button" id="audioDelayMinus">-</button>
+				<input type="text" id="audioDelay" size=1></input>
+				<button type="button" id="audioDelayPlus">+</button>
+				<br />
+				Aspect ratio:
+				<select id="aspectratio">
+					<option value="1:1">1:1</option>
+					<option value="4:3">4:3</option>
+					<option value="16:10">16:10</option>
+					<option value="16:9">16:9</option>
+				</select>
+			</div>
+			<div id="playlist" class="wide">
+				<ul id="playlistitems">
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>
