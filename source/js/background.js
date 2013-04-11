@@ -18,7 +18,7 @@ chrome.contextMenus.create({
 	"title" : "Send this page VLC",
 	"type" : "normal",
 	"contexts" : ["page"],
-	"documentUrlPatterns ": [
+	"documentUrlPatterns": [
 								"http://www.youtube.com/watch?v=*",
 								"http://www.youtube.com/v/*"
 							],
