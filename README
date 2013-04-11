@@ -1,10 +1,15 @@
 Chrome VLC Remote
 
+2013-04-08 v0.3 YouTube
+* Added ability to send YouTube links to VLC.
+* Added fullscreen toggle button.
+* Added 'default' option for aspect ratio selector.
+
 2013-04-08 v0.2 Initial Github Release
 * HTML5 compliance.
 * Restructured files.
 
-2013-04-08 v0.1 Initial Development.
+2012-~~~~~ v0.1 Initial Development.
 * Basic functionality working.
 * Display currently playing file
 * Display playlist
