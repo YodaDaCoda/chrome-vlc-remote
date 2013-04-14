@@ -23,15 +23,13 @@ var fullscreen;
 
 function update(){
 	console.log("update");
-	$.ajax(
-		{
+	$.ajax({
 		url:		server+"requests/status.xml",
 		success:	function (data, status, jqXHR) {
 						processUpdate(data, status, jqXHR);
-					}
-		}
-	);
-	setTimeout(function(){update();}, 1000);
+					},
+		complete:	function(jqXHR, textStatus) { setTimeout(update, 1000); }
+	});
 }
 function processUpdate(data, status, jqXHR) {
 	playing = $('[name="filename"]', data).text();
