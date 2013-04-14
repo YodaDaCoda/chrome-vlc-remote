@@ -204,7 +204,6 @@ function seek(){
 
 //When the DOM is ready
 $(function() {
-	update();
 	$("#p1m")				.on("click",	function(event){ skip("+60");						});
 	$("#p10s")				.on("click",	function(event){ skip("+10");						});
 	$("#m10s")				.on("click",	function(event){ skip("-10");						});
