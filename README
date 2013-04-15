@@ -1,5 +1,27 @@
 Chrome VLC Remote
 
+It's not pretty, but it works.
+
+Source is licensed GPLv3 and available on Github. Feel free to contribute.
+https://github.com/YodaDaCoda/chrome-vlc-remote/
+
+Set the server and port and you're good to go.
+
+Includes:
+* Play/Pause/Stop playback
+* Adjust volume (slider, large increment or small increment)
+* Adjust audio delay
+* Set aspect ratio
+* Very basic playlist (no way to add or remove items)
+* Toggle fullscreen.
+
+CHANGELOG
+
+2013-04-15 v0.4 COLOURS!
+* Styled range elements.
+* Restructured page to use tables instead of divs, because divs suck.
+* Other relatively minor changes
+
 2013-04-08 v0.3 YouTube
 * Added ability to send YouTube links to VLC.
 * Added fullscreen toggle button.

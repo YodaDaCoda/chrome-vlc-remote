@@ -1,19 +1,19 @@
 /*
 Chrome VLC Remote
-    Copyright (C) 2013  William Pickering
+	Copyright (C) 2013  William Pickering
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 var server = "http://" + localStorage["server"] + ":" + localStorage["port"] + "/";
 
@@ -133,9 +133,8 @@ function refreshPlaylist() {
 										$(li).attr("id", $(this).attr("id"));
 										$(li).attr("duration", $(this).attr("duration"));
 										$(li).append($(this).attr("name"));
-										//if ((playing == $(this).attr("name")) || ($(this).attr("current") == "current")) {
 										if ($(this).attr("current") == "current") {
-											$(li).css("background-color", "#94DBFF");
+											$(li).addClass("current");
 										}
 										$("#playlistitems").append(li);
 									}
@@ -186,11 +185,11 @@ function execCmd(cmd){
 	);
 }
 
-function seek(){
-	console.log("seek "+Math.floor(Number($(this).attr("value"))*Number(length)));
+function seek(t){
+	//console.log("seek "+Math.floor(Number($(this).attr("value"))*Number(length)));
 	$.ajax(
 		{
-			url:		server+"requests/status.xml?command=seek&val="+Math.floor(Number($(this).attr("value"))*Number(length)),
+			url:		server+"requests/status.xml?command=seek&val="+Math.floor(t*length),
 			datatype:	"xml",
 			success:	function (data, status, jqXHR) {
 							processUpdate(data, status, jqXHR);
@@ -218,10 +217,60 @@ $(function() {
 	$("#audioDelayMinus")	.on("click",	function(event){ changeAudioDelay("-0.01");			});
 	$("#audioDelayPlus")	.on("click",	function(event){ changeAudioDelay("+0.01");			});
 	$("#audioDelay")		.on("dblclick",	function(event){ setAudioDelay("0");				});
-	$("#position")			.on("change",	function(event){ seek();							});
+	$("#position")			.on("change",	function(event){ seek($(this).attr("value"));		});
 	$("#volume")			.on("change",	function(event){ setVolume($(this).attr("value"));	});
 	$("#aspectratio")		.on("change",	function(event){ setAR();							});
 	$("#fullscreen")		.on("click",	function(event){ toggleFullscreen();				});
 	update();
 	//refreshPlaylist();
 });
+
+// Tooltip stuff that may or may not end up actually being used
+/*
+$(function() {
+	var el, newPoint, newPlace, offset, transition, output;
+
+	// Select all range inputs, watch for change
+	$("input[type='range']").change(function() {
+
+		// Cache this for efficiency
+		el = $(this);
+
+		// Measure width of range input
+		width = el.width();
+
+		// Figure out placement percentage between left and right of input
+		newPoint = (el.val() - el.attr("min")) / (el.attr("max") - el.attr("min"));
+
+		// Prevent bubble from going beyond left or right (unsupported browsers)
+		// odd offset to make label line up better
+		offset = -1
+		
+		newPlace = (width * (newPoint)).toFixed(0).toString();
+		offset -= (newPoint*6);    //I'm not sure why 6 works, but it do
+
+		// Move bubble
+		// store the output element for effeciency
+		output = el.siblings("output");
+		// store the transition for restoration later
+		transition = output.css("transition");
+		// with the output element
+		output
+		// disable transition
+		.css("transition", "none")
+		// set new css
+		.css({
+			left: newPlace + "px",
+			marginLeft: offset + "%"
+		})
+		// set the text
+		.text(el.val())
+		// force a quick repaint before the animation kicks back in
+		.hide(0, function(){$(this).show();})
+		// re-enable the animation
+		.css("transition", transition);        
+	})
+	// Fake a change to position bubble at page load
+	.trigger('change');
+});
+*/

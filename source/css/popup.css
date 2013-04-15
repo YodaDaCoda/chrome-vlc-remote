@@ -1,32 +1,194 @@
-.centered {
-	text-align:		center;
-	margin-left:	auto;
-	margin-right:	auto;
-	width:			500px;
-}
+/*
+Chrome VLC Remote
+	Copyright (C) 2013  William Pickering
 
-div.wide {
-	width:			500px;
-}
-.wide {
-	margin-left:	0px;
-	margin-right:	0px;
-	width:			384px;
-}
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-.left {
-	float:			left;
-}
-.right {
-	float:			right;
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+body {
+	background:		#2B353E;
+	color:			white;
+	margin:			0;
+	padding:		0;
+	width:			500px;
 }
 
 button {
 	padding-left:	1px;
 	padding-right:	1px;
-	margin-left:	0px;
-	margin-right:	0px;
+	margin-left:	1px;
+	margin-right:	1px;
+	
+	border:			0px;
+	border-radius:	7px;
+	background:		linear-gradient(0deg, #ebf1f6 0%, #abd3ee 50%, #89c3eb 51%, #d5ebfb 100%);
+}
+button:hover {
+	background:		linear-gradient(180deg, #ebf1f6 0%, #abd3ee 50%, #89c3eb 51%, #d5ebfb 100%);
+}
+#playlist {
+	padding:		1px;
+}
+#playlist ul {
+	padding:		2px;
+	margin:			0px;
+}
+#playlist ul li
+{
+	border-radius:	5px;
+	list-style-type:none;
+	background-image:url(../img/bullet.png);
+	background-position: 0px 2px;
+	background-repeat:	no-repeat;
+	padding:		0px;
+	padding-left:	15px;
+	margin:			0px 1px;
+}
+#playlist ul li.current {
+	/*border-style:		solid;*/
+	/*border-width:		1px;*/
+	background-color:	#10171D;
+	/*border-color:		#291FA1;*/
 }
 
-.selected {
+table {
+	width:			100%;
+}
+
+div.centered {
+	text-align:		center;
+}
+div.centered button {
+	padding:		1px 5px;
+}
+
+#controls tr td:nth-child(1) {
+	text-align:		left;
+}
+#controls tr td:nth-child(3) {
+	text-align:		right;
+}
+
+#controls tr td:nth-child(1),
+#controls tr td:nth-child(3),
+#controls tr td:nth-child(4),
+#controls tr td:nth-child(6)
+{
+	width:			60px;
+}
+#controls tr td:nth-child(2){
+	/*width:			100%;*/
+	text-align:			center;
+}
+#info tr td:not(:empty) {
+	width:			100px;
+	text-align:		center;
+}
+#info tr td:not(:empty) div {
+	background:		#10171D;
+	border-radius:	40px;
+	display:		inline-block;
+	margin:			auto;
+	padding:		0px 5px;
+}
+#info tr:nth-child(2) td:nth-child(1) {
+	text-align:		left;
+}
+#info tr:nth-child(2) td:nth-child(3) {
+	text-align:		right;
+}
+
+.slider {
+	width:			100%;
+	padding:		0px;
+	display:		inline;
+	height:			17px;
+	position:		relative;
+	margin:			auto;
+	background:		#10171D;
+	border-radius:	40px;
+	box-shadow:		inset 0px 0px 1px 1px rgba(0, 0, 0, 0.9), 0px 1px 1px 0px rgba(255, 255, 255, 0.13);
+}
+
+.slider .bar {
+	width:			97%;
+	height:			5px;
+	position:		relative;
+	top:			-4px;
+	left:			0px;
+	background: linear-gradient(90deg, #1d2e38 0%, #3b5264 50%, #2b4254 100%);
+	border-radius: 40px;
+}
+
+.slider .highlight {
+	display: inline-block;
+	height: 2px;
+	position: absolute;
+	width: 99%;
+	margin: 0px 0px;
+	top: 6px;
+	left: 2px;
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	background: rgba(255, 255, 255, 0.25);
+}
+
+input[type="range"] {
+	-webkit-appearance: none;
+	background-color: black;
+	height: 2px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	position: relative;
+	top: 1px;
+	z-index: 1;
+	width: 24px;
+	height: 24px;
+	cursor: pointer;
+	/*box-shadow: 0px 6px 5px 0px rgba(0,0,0,0.6);*/
+	border-radius: 4px;
+	background-image: linear-gradient(0deg, #ebf1f6 0%, #abd3ee 50%, #89c3eb 51%, #d5ebfb 100%);
+}
+
+input[type="range"]:hover ~ .rangevalue,
+input[type="range"]:active ~ .rangevalue {
+	opacity: 1;
+	top: -75px;
+}
+
+
+/* Tool Tip */
+.rangevalue {
+	color: white;
+	font-size: 10px;
+	text-align: center;
+	font-family:  Arial, sans-serif;
+	display: inline;
+	color: #fff;
+	margin: 20px 0;
+	position: absolute;
+	left: 44.5%;
+	padding: 6px 12px;
+	border: 1px solid black;
+
+	box-shadow: inset 0px 1px 1px 0px rgba(255, 255, 255, 0.2), 0px 2px 4px 0px rgba(0,0,0,0.4);
+	background: linear-gradient(0deg, #222931 0%, #181D21 100%);
+	border-radius: 20px;
+	width: 18px;
+	opacity: 0;
+	transition: all 0.2s ease;
+	top: -95px;
 }
