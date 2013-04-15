@@ -8,12 +8,14 @@ https://github.com/YodaDaCoda/chrome-vlc-remote/
 Set the server and port and you're good to go.
 
 Includes:
+* Seek through currently playing file
 * Play/Pause/Stop playback
 * Adjust volume (slider, large increment or small increment)
+* Toggle fullscreen.
 * Adjust audio delay
 * Set aspect ratio
 * Very basic playlist (no way to add or remove items)
-* Toggle fullscreen.
+* Send YouTube videos to VLC from right-click menu.
 
 CHANGELOG
 
