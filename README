@@ -28,7 +28,7 @@ CHANGELOG
 * Separated playlist update function from status update function.
 * Playlist and status update immediately when a new playlist item is selected from playlist, or added from file browser.
 * Lots of minor code rearrangement.
-
+* Added button to open file browser in new tab.
 
 2013-04-15 v0.4 COLOURS!
 * Styled range elements.

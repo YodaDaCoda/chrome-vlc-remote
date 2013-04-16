@@ -340,6 +340,7 @@ $(function() {
 	$("#filebrowser span")	.on("click",	function(event){ event.stopPropagation(); $("#filebrowser #files").toggle(); $("#filebrowser img").toggleClass("closed"); $("#filebrowser img").toggleClass("open"); });
 	$("#playlist span")		.on("click",	function(event){ event.stopPropagation(); $("#playlist ul").toggle(); $("#playlist img").toggleClass("closed"); $("#playlist img").toggleClass("open"); });
 	$("#extras span")		.on("click",	function(event){ event.stopPropagation(); $("#extras div").toggle(); $("#extras img").toggleClass("closed"); $("#extras img").toggleClass("open"); });
+	$("img#newtab")			.on("click",	function(event){ event.stopPropagation(); chrome.tabs.create({ url: "browse.html" }); });
 	update();
 	refreshPlaylist();
 	loadDir(localStorage["fbStartDir"]);

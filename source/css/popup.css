@@ -224,3 +224,7 @@ div img.open
 {
 	padding-left:		15px;
 }
+img#newtab {
+	content:			url(../img/newtab.png);
+	cursor:				pointer;
+}
