@@ -19,7 +19,7 @@ Includes:
 
 CHANGELOG
 
-2013-04-16 v0.5 Updates
+2013-04-16 v0.5 File Browser
 * Updated JQuery to v1.9.1.
 * Fixed minor incompatibilities with new JQuery.
 * Added file browser.
