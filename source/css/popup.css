@@ -39,6 +39,7 @@ button:hover {
 }
 #playlist {
 	padding:		1px;
+	max-height:		200px;
 }
 #playlist ul {
 	padding:		2px;
@@ -191,4 +192,35 @@ input[type="range"]:active ~ .rangevalue {
 	opacity: 0;
 	transition: all 0.2s ease;
 	top: -95px;
+}
+
+div img.closed {
+	content:			url(../img/folder-closed.png)
+}
+div img.open
+{
+	content:			url(../img/folder-open.png)
+}
+#extras div {
+	display:			none;
+}
+#filebrowser,
+#playlist,
+#extras
+{
+	padding:			1px;
+	margin:				0px;
+	border:				0px;
+}
+#filebrowser #files {
+	border:				0px;
+	display:			none;
+	width:				100%;
+	min-height:			150px;
+}
+#filebrowser #files,
+#playlist ul,
+#extras div
+{
+	padding-left:		15px;
 }

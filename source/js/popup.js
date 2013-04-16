@@ -21,6 +21,9 @@ var playing = "";
 var length = "";
 var fullscreen;
 
+var playlistTimeout;
+var updateTimeout;
+
 function update(){
 	console.log("update");
 	$.ajax({
@@ -28,7 +31,7 @@ function update(){
 		success:	function (data, status, jqXHR) {
 						processUpdate(data, status, jqXHR);
 					},
-		complete:	function(jqXHR, textStatus) { setTimeout(update, 1000); }
+		complete:	function(jqXHR, textStatus) { updateTimeout = setTimeout(update, 1000); }
 	});
 }
 function processUpdate(data, status, jqXHR) {
@@ -36,14 +39,71 @@ function processUpdate(data, status, jqXHR) {
 	$("#file").text($('[name="filename"]', data).text());
 	$("#time").text(format_time($("time", data).text()));
 	$("#length").text(format_time($("length", data).text()));
-	$("#volume").attr("value", $("volume", data).text());
-	$("#position").attr("value", $("position", data).text());
+	$("#volume").val($("volume", data).text());
+	$("#position").val($("position", data).text());
 	length = $("length", data).text();
-	$("#audioDelay").attr("value", $("audiodelay", data).text())
-	$("#aspectratio").attr("value", $("aspectratio", data).text())
+	$("#audioDelay").val($("audiodelay", data).text())
+	$("#aspectratio").val($("aspectratio", data).text())
 	fullscreen = $("fullscreen", data).text();
-	refreshPlaylist();
 }
+
+function refreshPlaylist() {
+	console.log("refreshplaylist");
+	$.ajax(
+		{
+		url:		server+"requests/playlist.xml",
+		datatype:	"xml",
+		success:	function (data, status, jqXHR) {
+						processPlaylist(data);
+					},
+		complete:	function(jqXHR, textStatus) { playlistTimeout = setTimeout(refreshPlaylist, 10000); }
+		}
+	);
+}
+function processPlaylist(data) {
+	$("#playlistitems").empty();
+	$('[name="Playlist"]', data).each(
+		function(){
+			$("leaf", $(this)).each(
+				function(){
+					li = document.createElement("li");
+					$(li).attr("name", $(this).attr("name"));
+					$(li).attr("ro", $(this).attr("ro"));
+					$(li).attr("uri", $(this).attr("uri"));
+					$(li).attr("id", $(this).attr("id"));
+					$(li).attr("duration", $(this).attr("duration"));
+					$(li).append($(this).attr("name"));
+					if ($(this).attr("current") == "current") {
+						$(li).addClass("current");
+					}
+					$("#playlistitems").append(li);
+				}
+			)
+		}
+	);
+	$("li").on("click", function() { 
+							playID($(this).attr("id"));
+						}
+	);
+}
+
+function playID(id){
+	console.log("Playing "+id);
+	clearTimeout(playlistTimeout);
+	clearTimeout(updateTimeout);
+	$.ajax({
+		url:		server+"requests/status.xml?command=pl_play&id="+id,
+		datatype:	"xml",
+		success:	function (data, status, jqXHR) {
+						processUpdate(data, status, jqXHR);
+					},
+		complete:	function() {
+						refreshPlaylist();
+						update();
+					}
+	});
+}
+
 
 function setVolume(volume) {
 	console.log("volume "+volume);
@@ -88,7 +148,7 @@ function setAudioDelay(delay) {
 	);
 }
 function changeAudioDelay(delay) {
-	setAudioDelay((parseFloat($("#audioDelay").attr("value"))+parseFloat(delay)).toString())
+	setAudioDelay((parseFloat($("#audioDelay").val())+parseFloat(delay)).toString())
 }
 
 //format_time - takes time in seconds, returns hh:mm:ss
@@ -115,56 +175,14 @@ function skip(s) {
 	);
 }
 
-function refreshPlaylist() {
-	$.ajax(
-		{
-		url:		server+"requests/playlist.xml",
-		datatype:	"xml",
-		success:	function (data, status, jqXHR) {
-						$("#playlistitems").empty();
-						$('[name="Playlist"]', data).each(
-							function(){
-								$("leaf", $(this)).each(
-									function(){
-										li = document.createElement("li");
-										$(li).attr("name", $(this).attr("name"));
-										$(li).attr("ro", $(this).attr("ro"));
-										$(li).attr("uri", $(this).attr("uri"));
-										$(li).attr("id", $(this).attr("id"));
-										$(li).attr("duration", $(this).attr("duration"));
-										$(li).append($(this).attr("name"));
-										if ($(this).attr("current") == "current") {
-											$(li).addClass("current");
-										}
-										$("#playlistitems").append(li);
-									}
-								)
-							}
-						);
-						$("li").on("click", playID);
-					}
-		}
-	);
-}
 
-function playID(){
-	console.log("Playing "+($(this).attr("name")));
-	$.ajax(
-		{
-		url:		server+"requests/status.xml?command=pl_play&id="+$(this).attr("id"),
-		datatype:	"xml",
-		success:	function (data, status, jqXHR) {
-						processUpdate(data, status, jqXHR);
-					}
-		}
-	);
-}
+
 
 function setAR(){
 	//16:10
 	$.ajax(
 		{
-			url:		server+"requests/status.xml?command=aspectratio&val="+$(this).attr("value"),
+			url:		server+"requests/status.xml?command=aspectratio&val="+$(this).val(),
 			datatype:	"xml",
 			success:	function (data, status, jqXHR) {
 							processUpdate(data, status, jqXHR);
@@ -186,7 +204,7 @@ function execCmd(cmd){
 }
 
 function seek(t){
-	//console.log("seek "+Math.floor(Number($(this).attr("value"))*Number(length)));
+	console.log("seek "+Math.floor(t*length));
 	$.ajax(
 		{
 			url:		server+"requests/status.xml?command=seek&val="+Math.floor(t*length),
@@ -199,30 +217,132 @@ function seek(t){
 }
 
 
+
+
+
+function loadDir(dir){
+	console.log("loadDir "+dir);
+	$.ajax({
+		url:		server+"requests/browse.xml?dir="+dir,
+		success:	processDir("d"+dir),
+	});
+}
+
+var processDir = function(dir){
+	return function(data, status, jqXHR){
+		var dirr = dir.replace(/([ !"#$%&'()*+,.\/:;<=>?@\[\\\]^`{|}~])/g, "\\$1");
+		var ul = $(document.createElement("ul")).attr("id", dir);
+		if (dir == "d"+localStorage["fbStartDir"]) {
+			$("#files").append(ul);
+		} else {
+			$("#"+dirr).append(ul);
+		}
+		$(data).find("element").each( appendElement(dirr) );
+	};
+}
+
+var appendElement = function(dir){
+	return function(index, element) {
+		var e = $(element);	//shorthand for effeciency
+		//if (e.attr("name").substr(-2) == "..") {
+		if (index == 0) {
+			return;
+		}
+		var li = $(document.createElement("li"))
+				.text(e.attr("name"))
+				.attr("id", "d"+e.attr("path"))
+				.attr("type", e.attr("type"))
+				.attr("path", e.attr("path"))
+				.attr("uri", e.attr("uri"))
+				.on("click", function(event) {
+								event.stopPropagation();
+								var t = $(this);	//effeciency
+								if ( t.hasClass("folder-open") ) {
+									t.children("ul").remove();
+									t.toggleClass("folder-closed");
+									t.toggleClass("folder-open");
+									return;
+								} else if ( t.hasClass("file-audio") || t.hasClass("file-video") ) {
+									return;
+								}
+								loadDir(t.attr("path"));
+								t.toggleClass("folder-closed");
+								t.toggleClass("folder-open");
+							}
+				)
+				.on("dblclick", function(event) {
+								event.stopPropagation();
+								var t = $(this);	//effeciency
+								if ( t.hasClass("file-audio") || t.hasClass("file-video") ) {
+									enqueue(t.attr("uri"));
+								}
+							}
+				)
+				;
+		//var ext = e.attr("path").substr(-3).toLowerCase();
+		var ext = e.attr("path").split(".");
+		ext = ext[ext.length-1].toLowerCase();
+		if (e.attr("type") == "dir") {
+			li.addClass("folder-closed");
+		} else if ( ["mp3", "3ga", "aac", "aif", "ape", "fla", "flac", "m4b"].indexOf(ext) != -1) {
+			li.addClass("file-audio");
+		} else if ( ["mkv", "avi", "mp4", "mov"].indexOf(ext) != -1 ) {
+			li.addClass("file-video");
+		}
+		$("ul#"+dir).append(li);
+	};
+}
+
+function enqueue(f){
+	console.log("enqueue " + f);
+	clearTimeout(playlistTimeout);
+	clearTimeout(updateTimeout);
+	$.ajax({
+		url:		server+"requests/status.xml?command=in_enqueue&input="+f,
+		datatype:	"xml",
+		success:	function (data, status, jqXHR) {
+						//processUpdate(data, status, jqXHR);
+					},
+		complete:	function() {
+						refreshPlaylist();
+						update();
+					}
+	});
+}
+
+
+
+
+
+
 //When the DOM is ready
 $(function() {
-	$("#p1m")				.on("click",	function(event){ skip("+60");						});
-	$("#p10s")				.on("click",	function(event){ skip("+10");						});
-	$("#m10s")				.on("click",	function(event){ skip("-10");						});
-	$("#m1m")				.on("click",	function(event){ skip("-60");						});
-	$("#play")				.on("click",	function(event){ execCmd("pl_play");				});
-	$("#pause")				.on("click",	function(event){ execCmd("pl_pause");				});
-	$("#stop")				.on("click",	function(event){ execCmd("pl_stop");				});
-	$("#next")				.on("click",	function(event){ execCmd("pl_next");				});
-	$("#previous")			.on("click",	function(event){ execCmd("pl_previous");			});
-	$("#voldd")				.on("click",	function(event){ setVolume("-100");					});
-	$("#vold")				.on("click",	function(event){ setVolume("-10");					});
-	$("#volu")				.on("click",	function(event){ setVolume("+10");					});
-	$("#voluu")				.on("click",	function(event){ setVolume("+100");					});
-	$("#audioDelayMinus")	.on("click",	function(event){ changeAudioDelay("-0.01");			});
-	$("#audioDelayPlus")	.on("click",	function(event){ changeAudioDelay("+0.01");			});
-	$("#audioDelay")		.on("dblclick",	function(event){ setAudioDelay("0");				});
-	$("#position")			.on("change",	function(event){ seek($(this).attr("value"));		});
-	$("#volume")			.on("change",	function(event){ setVolume($(this).attr("value"));	});
-	$("#aspectratio")		.on("change",	function(event){ setAR();							});
-	$("#fullscreen")		.on("click",	function(event){ toggleFullscreen();				});
+	$("#p1m")				.on("click",	function(event){ event.stopPropagation(); skip("+60");						});
+	$("#p10s")				.on("click",	function(event){ event.stopPropagation(); skip("+10");						});
+	$("#m10s")				.on("click",	function(event){ event.stopPropagation(); skip("-10");						});
+	$("#m1m")				.on("click",	function(event){ event.stopPropagation(); skip("-60");						});
+	$("#play")				.on("click",	function(event){ event.stopPropagation(); execCmd("pl_play");				});
+	$("#pause")				.on("click",	function(event){ event.stopPropagation(); execCmd("pl_pause");				});
+	$("#stop")				.on("click",	function(event){ event.stopPropagation(); execCmd("pl_stop");				});
+	$("#next")				.on("click",	function(event){ event.stopPropagation(); execCmd("pl_next");				});
+	$("#previous")			.on("click",	function(event){ event.stopPropagation(); execCmd("pl_previous");			});
+	$("#voldd")				.on("click",	function(event){ event.stopPropagation(); setVolume("-100");				});
+	$("#vold")				.on("click",	function(event){ event.stopPropagation(); setVolume("-10");					});
+	$("#volu")				.on("click",	function(event){ event.stopPropagation(); setVolume("+10");					});
+	$("#voluu")				.on("click",	function(event){ event.stopPropagation(); setVolume("+100");				});
+	$("#audioDelayMinus")	.on("click",	function(event){ event.stopPropagation(); changeAudioDelay("-0.01");		});
+	$("#audioDelayPlus")	.on("click",	function(event){ event.stopPropagation(); changeAudioDelay("+0.01");		});
+	$("#audioDelay")		.on("dblclick",	function(event){ event.stopPropagation(); setAudioDelay("0");				});
+	$("#position")			.on("change",	function(event){ event.stopPropagation(); seek($(this).val());		});
+	$("#volume")			.on("change",	function(event){ event.stopPropagation(); setVolume($(this).val());	});
+	$("#aspectratio")		.on("change",	function(event){ event.stopPropagation(); setAR();							});
+	$("#fullscreen")		.on("click",	function(event){ event.stopPropagation(); toggleFullscreen();				});
+	$("#filebrowser span")	.on("click",	function(event){ event.stopPropagation(); $("#filebrowser #files").toggle(); $("#filebrowser img").toggleClass("closed"); $("#filebrowser img").toggleClass("open"); });
+	$("#playlist span")		.on("click",	function(event){ event.stopPropagation(); $("#playlist ul").toggle(); $("#playlist img").toggleClass("closed"); $("#playlist img").toggleClass("open"); });
+	$("#extras span")		.on("click",	function(event){ event.stopPropagation(); $("#extras div").toggle(); $("#extras img").toggleClass("closed"); $("#extras img").toggleClass("open"); });
 	update();
-	//refreshPlaylist();
+	refreshPlaylist();
+	loadDir(localStorage["fbStartDir"]);
 });
 
 // Tooltip stuff that may or may not end up actually being used

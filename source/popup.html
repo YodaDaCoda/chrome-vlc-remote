@@ -21,9 +21,10 @@ Chrome VLC Remote
 	<head>
 		<title>VLC Remote for Chrome</title>
 		<meta charset="UTF-8">
-		<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+		<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
 		<script type="text/javascript" src="js/popup.js"></script>
 		<link rel="stylesheet" type="text/css" href="css/popup.css">
+		<link rel="stylesheet" type="text/css" href="css/browse.css">
 	</head>
 
 	<body>
@@ -84,27 +85,34 @@ Chrome VLC Remote
 			<button type="button" id="fullscreen">Toggle Fullscreen</button>
 		</div>
 
-		<div>
-			Audio Delay (ms):
-			<button type="button" id="audioDelayMinus">-</button><input type="text" id="audioDelay" size=1><button type="button" id="audioDelayPlus">+</button>
+		<div id="extras">
+			<span><img class="closed">Extra Controls</span>
+			<div>
+				Audio Delay (ms):
+				<button type="button" id="audioDelayMinus">-</button><input type="text" id="audioDelay" size=1><button type="button" id="audioDelayPlus">+</button>
+				<br />
+				Aspect ratio:
+				<select id="aspectratio">
+					<option value="default">default</option>
+					<option value="1:1">1:1</option>
+					<option value="4:3">4:3</option>
+					<option value="16:10">16:10</option>
+					<option value="16:9">16:9</option>
+				</select>
+			</div>
+			<!--<br />-->
 		</div>
-
-		<div>
-			Aspect ratio:
-			<select id="aspectratio">
-				<option value="default">default</option>
-				<option value="1:1">1:1</option>
-				<option value="4:3">4:3</option>
-				<option value="16:10">16:10</option>
-				<option value="16:9">16:9</option>
-			</select>
-		</div>
-
-		<br />
 		<div id="playlist">
-			Playlist
+			<span><img class="open">Playlist</span>
 			<ul id="playlistitems">
 			</ul>
+		</div>
+
+		<div id="filebrowser" >
+			<span><img class="closed">File browser</span>
+			<div id="files">
+			</div>
+			<!--<iframe src="browse.html"></iframe>-->
 		</div>
 
 	</body>

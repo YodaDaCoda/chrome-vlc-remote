@@ -14,10 +14,21 @@ Includes:
 * Toggle fullscreen.
 * Adjust audio delay
 * Set aspect ratio
-* Very basic playlist (no way to add or remove items)
+* Playlist & file browser.
 * Send YouTube videos to VLC from right-click menu.
 
 CHANGELOG
+
+2013-04-16 v0.5 Updates
+* Updated JQuery to v1.9.1.
+* Fixed minor incompatibilities with new JQuery.
+* Added file browser.
+* Added setting for default file browser starting location.
+* Separated extra controls into their own box.
+* Separated playlist update function from status update function.
+* Playlist and status update immediately when a new playlist item is selected from playlist, or added from file browser.
+* Lots of minor code rearrangement.
+
 
 2013-04-15 v0.4 COLOURS!
 * Styled range elements.
