@@ -83,7 +83,7 @@ var appendElement = function(dir){
 			li.addClass("folder-closed");
 		} else if ( ["mp3", "3ga", "aac", "aif", "ape", "fla", "flac", "m4b"].indexOf(ext) != -1) {
 			li.addClass("file-audio");
-		} else if ( ["mkv", "avi", "mp4", "mov"].indexOf(ext) != -1 ) {
+		} else if ( ["mkv", "avi", "mp4", "mov", "mpg"].indexOf(ext) != -1 ) {
 			li.addClass("file-video");
 		}
 		$("ul#"+dir).append(li);
@@ -102,7 +102,6 @@ function enqueue(f){
 		}
 	);
 }
-
 
 
 //When the DOM is ready

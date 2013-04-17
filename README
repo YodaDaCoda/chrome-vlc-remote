@@ -1,11 +1,9 @@
 Chrome VLC Remote
 
-It's not pretty, but it works.
+Set the server and port and you're good to go.
 
 Source is licensed GPLv3 and available on Github. Feel free to contribute.
 https://github.com/YodaDaCoda/chrome-vlc-remote/
-
-Set the server and port and you're good to go.
 
 Includes:
 * Seek through currently playing file
@@ -18,6 +16,15 @@ Includes:
 * Send YouTube videos to VLC from right-click menu.
 
 CHANGELOG
+
+2013-04-17 v0.6 JSON
+* Switched from XML to JSON queries. I didn't even realise VLC did JSON.
+* Huge improvements to effeciency and size of code thanks to JSON.
+* Moved almost all $.ajax requests into a single function, resulting in smaller js file size, extra code reuse, and some minor problems fixed.
+* A new set of refresh..() commands will not NOT be executed for each playlist item change.
+* Extras, Platlist & File Browser now fade in/out.
+* Added more AspectRatio options, as per the VLC API spec.
+* Added mpg to video formats list.
 
 2013-04-16 v0.5 File Browser
 * Updated JQuery to v1.9.1.

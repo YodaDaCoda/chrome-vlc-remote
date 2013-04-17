@@ -17,139 +17,11 @@ Chrome VLC Remote
 */
 var server = "http://" + localStorage["server"] + ":" + localStorage["port"] + "/";
 
-var playing = "";
 var length = "";
 var fullscreen;
 
 var playlistTimeout;
 var updateTimeout;
-
-function update(){
-	console.log("update");
-	$.ajax({
-		url:		server+"requests/status.xml",
-		success:	function (data, status, jqXHR) {
-						processUpdate(data, status, jqXHR);
-					},
-		complete:	function(jqXHR, textStatus) { updateTimeout = setTimeout(update, 1000); }
-	});
-}
-function processUpdate(data, status, jqXHR) {
-	playing = $('[name="filename"]', data).text();
-	$("#file").text($('[name="filename"]', data).text());
-	$("#time").text(format_time($("time", data).text()));
-	$("#length").text(format_time($("length", data).text()));
-	$("#volume").val($("volume", data).text());
-	$("#position").val($("position", data).text());
-	length = $("length", data).text();
-	$("#audioDelay").val($("audiodelay", data).text())
-	$("#aspectratio").val($("aspectratio", data).text())
-	fullscreen = $("fullscreen", data).text();
-}
-
-function refreshPlaylist() {
-	console.log("refreshplaylist");
-	$.ajax(
-		{
-		url:		server+"requests/playlist.xml",
-		datatype:	"xml",
-		success:	function (data, status, jqXHR) {
-						processPlaylist(data);
-					},
-		complete:	function(jqXHR, textStatus) { playlistTimeout = setTimeout(refreshPlaylist, 10000); }
-		}
-	);
-}
-function processPlaylist(data) {
-	$("#playlistitems").empty();
-	$('[name="Playlist"]', data).each(
-		function(){
-			$("leaf", $(this)).each(
-				function(){
-					li = document.createElement("li");
-					$(li).attr("name", $(this).attr("name"));
-					$(li).attr("ro", $(this).attr("ro"));
-					$(li).attr("uri", $(this).attr("uri"));
-					$(li).attr("id", $(this).attr("id"));
-					$(li).attr("duration", $(this).attr("duration"));
-					$(li).append($(this).attr("name"));
-					if ($(this).attr("current") == "current") {
-						$(li).addClass("current");
-					}
-					$("#playlistitems").append(li);
-				}
-			)
-		}
-	);
-	$("li").on("click", function() { 
-							playID($(this).attr("id"));
-						}
-	);
-}
-
-function playID(id){
-	console.log("Playing "+id);
-	clearTimeout(playlistTimeout);
-	clearTimeout(updateTimeout);
-	$.ajax({
-		url:		server+"requests/status.xml?command=pl_play&id="+id,
-		datatype:	"xml",
-		success:	function (data, status, jqXHR) {
-						processUpdate(data, status, jqXHR);
-					},
-		complete:	function() {
-						refreshPlaylist();
-						update();
-					}
-	});
-}
-
-
-function setVolume(volume) {
-	console.log("volume "+volume);
-	$.ajax(
-		{
-		url:		server+"requests/status.xml?command=volume&val="+volume,
-		datatype:	"xml",
-		success:	function (data, status, jqXHR) {
-						processUpdate(data, status, jqXHR);
-					}
-		}
-	);
-}
-
-function toggleFullscreen() {
-	setFullscreen(fullscreen == "false");
-}
-
-function setFullscreen(fs) {
-	console.log("fullscreen "+fs);
-	$.ajax(
-		{
-		url:		server+"requests/status.xml?command=fullscreen&val="+fs,
-		datatype:	"xml",
-		success:	function (data, status, jqXHR) {
-						processUpdate(data, status, jqXHR);
-					}
-		}
-	);
-}
-
-function setAudioDelay(delay) {
-	console.log("audio delay "+delay);
-	$.ajax(
-		{
-		url:		server+"requests/status.xml?command=audiodelay&val="+delay,
-		datatype:	"xml",
-		success:	function (data, status, jqXHR) {
-						processUpdate(data, status, jqXHR);
-					}
-		}
-	);
-}
-function changeAudioDelay(delay) {
-	setAudioDelay((parseFloat($("#audioDelay").val())+parseFloat(delay)).toString())
-}
 
 //format_time - takes time in seconds, returns hh:mm:ss
 function format_time(s) {
@@ -162,59 +34,137 @@ function format_time(s) {
 	return hours + ":" + minutes + ":" + seconds;
 }
 
-function skip(s) {
-	console.log("skip "+s);
-	$.ajax(
-		{
-		url:		server+"requests/status.xml?command=seek&val="+s,
-		datatype:	"xml",
-		success:	function (data, status, jqXHR) {
-						processUpdate(data, status, jqXHR);
-					}
-		}
-	);
+function setTimeouts() {
+	//Sometimes status & playlist don't seem to be updated immediately.
+	//wait 150ms before refreshing status & playlist to give VLC time to update internally.
+	updateTimeout = setTimeout(refreshStatus, 150);
+	playlistTimeout = setTimeout(refreshPlaylist, 150);
 }
 
-
-
-
-function setAR(){
-	//16:10
-	$.ajax(
-		{
-			url:		server+"requests/status.xml?command=aspectratio&val="+$(this).val(),
-			datatype:	"xml",
-			success:	function (data, status, jqXHR) {
-							processUpdate(data, status, jqXHR);
-						}
-		}
-	);
+function clearTimeouts() {
+	clearTimeout(playlistTimeout);
+	clearTimeout(updateTimeout);
 }
 
 function execCmd(cmd){
+	console.log("execCmd " + cmd);
+	clearTimeouts();
+	$.ajax({
+		url:		server+"requests/status.json?command="+cmd,
+		dataType:	"json",
+		complete:	function() {
+						setTimeouts();
+					}
+	});
+}
+
+
+function playID(id){
+	console.log("Playing "+id);
+	execCmd("pl_play&id="+id);
+}
+function setVolume(volume) {
+	console.log("volume "+volume);
+	execCmd("volume&val="+volume);
+}
+function skip(s) {
+	console.log("skip "+s);
+	execCmd("seek&val="+s);
+}
+function seek(t){
+	t = Math.floor(t*length)
+	console.log("seek "+t);
+	skip(t);
+}
+function setFullscreen(fs) {
+	console.log("fullscreen "+fs);
+	execCmd("fullscreen&val="+fs);
+}
+function toggleFullscreen() {
+	setFullscreen(fullscreen == false);
+}
+function setAudioDelay(delay) {
+	console.log("audio delay "+delay);
+	execCmd("audiodelay&val="+delay);
+}
+function changeAudioDelay(delay) {
+	setAudioDelay((parseFloat($("#audioDelay").val())+parseFloat(delay)).toString())
+}
+function setAR(ar){
+	console.log("setAR "+ar);
+	execCmd("aspectratio&val="+ar);
+}
+function enqueue(f){
+	console.log("enqueue " + f);
+	execCmd("in_enqueue&input="+f);
+}
+
+
+
+function refreshStatus(){
+	console.log("refreshStatus");
+	$.ajax({
+		url:		server+"requests/status.json",
+		dataType:	"json",
+		success:	function (data, status, jqXHR) {
+						processStatus(data);
+					},
+		complete:	function(jqXHR, textStatus) { updateTimeout = setTimeout(refreshStatus, 1000); }
+	});
+}
+function processStatus(data) {
+	console.log("processStatus");
+	$("#file").text(data.information.category.meta.filename);
+	$("#time").text(format_time(data.time));
+	length = data.length;
+	$("#length").text(format_time(length));
+	for (var i in ["volume", "position", "audiodelay", "aspectratio"]){
+		$("#"+i).val(data[i]);
+	}
+	fullscreen = data.fullscreen;
+}
+
+function refreshPlaylist() {
+	console.log("refreshPlaylist");
 	$.ajax(
 		{
-			url:		server+"requests/status.xml?command="+cmd,
-			datatype:	"xml",
-			success:	function (data, status, jqXHR) {
-							processUpdate(data, status, jqXHR);
-						}
+		url:		server+"requests/playlist.json",
+		dataType:	"json",
+		success:	function (data, status, jqXHR) {
+						processPlaylist(data);
+					},
+		complete:	function(jqXHR, textStatus) { playlistTimeout = setTimeout(refreshPlaylist, 10000); }
+		}
+	);
+}
+function processPlaylist(data) {
+	console.log("processplaylist");
+	$("#playlistitems").empty();
+	var p = data.children[0].children;
+	for (var i = 0; i < p.length; i++){
+		var li = $(document.createElement("li"));
+		var fn = p[i].uri.split("/"); fn = fn[fn.length-1];
+		for (var j in p[i]) {
+			li.attr(j, p[i][j]);
+		}
+		li.append(fn);
+		if (p[i].current == "current") {
+			li.addClass("current");
+		}
+		$("#playlistitems").append(li);
+	}
+	$("#playlistitems li").click(
+		function(event) {
+			event.stopPropagation();
+			clearTimeouts();
+			playID($(this).attr("id"));
 		}
 	);
 }
 
-function seek(t){
-	console.log("seek "+Math.floor(t*length));
-	$.ajax(
-		{
-			url:		server+"requests/status.xml?command=seek&val="+Math.floor(t*length),
-			datatype:	"xml",
-			success:	function (data, status, jqXHR) {
-							processUpdate(data, status, jqXHR);
-						}
-		}
-	);
-}
+
+
+
 
 
 
@@ -237,11 +187,11 @@ var processDir = function(dir){
 		} else {
 			$("#"+dirr).append(ul);
 		}
-		$(data).find("element").each( appendElement(dirr) );
+		$(data).find("element").each( appendFolder(dirr) );
 	};
 }
 
-var appendElement = function(dir){
+var appendFolder = function(dir){
 	return function(index, element) {
 		var e = $(element);	//shorthand for effeciency
 		//if (e.attr("name").substr(-2) == "..") {
@@ -286,62 +236,65 @@ var appendElement = function(dir){
 			li.addClass("folder-closed");
 		} else if ( ["mp3", "3ga", "aac", "aif", "ape", "fla", "flac", "m4b"].indexOf(ext) != -1) {
 			li.addClass("file-audio");
-		} else if ( ["mkv", "avi", "mp4", "mov"].indexOf(ext) != -1 ) {
+		} else if ( ["mkv", "avi", "mp4", "mov", "mpg"].indexOf(ext) != -1 ) {
 			li.addClass("file-video");
 		}
 		$("ul#"+dir).append(li);
 	};
 }
 
-function enqueue(f){
-	console.log("enqueue " + f);
-	clearTimeout(playlistTimeout);
-	clearTimeout(updateTimeout);
-	$.ajax({
-		url:		server+"requests/status.xml?command=in_enqueue&input="+f,
-		datatype:	"xml",
-		success:	function (data, status, jqXHR) {
-						//processUpdate(data, status, jqXHR);
-					},
-		complete:	function() {
-						refreshPlaylist();
-						update();
-					}
-	});
-}
 
 
 
+//pl_empty
+//pl_loop
+//pl_repeat
+//pl_random
+//pl_delete&id=<id>			-Officially unsupported, but may be useful
+
+//pl_sort&id=<id>&val=<val>
+//0 Id
+//1 Name
+//3 Author
+//5 Random
+//7 Track number
+
+//command=preamp&val=<val in dB>
+//sets the preamp value, must be: -20 => val <= 20
+
+//command=equalizer&band=<band>&val=<gain in dB>)
+//set the gain for a specific band, gain must be: -20 => val <= 20
+//Bands 0: 60 Hz, 1: 170 Hz, 2: 310 Hz, 3: 600 Hz, 4: 1 kHz, 5: 3 kHz, 6: 6 kHz, 7: 12 kHz , 8: 14 kHz , 9: 16 kHz
 
 
 
 //When the DOM is ready
 $(function() {
-	$("#p1m")				.on("click",	function(event){ event.stopPropagation(); skip("+60");						});
-	$("#p10s")				.on("click",	function(event){ event.stopPropagation(); skip("+10");						});
-	$("#m10s")				.on("click",	function(event){ event.stopPropagation(); skip("-10");						});
-	$("#m1m")				.on("click",	function(event){ event.stopPropagation(); skip("-60");						});
-	$("#play")				.on("click",	function(event){ event.stopPropagation(); execCmd("pl_play");				});
-	$("#pause")				.on("click",	function(event){ event.stopPropagation(); execCmd("pl_pause");				});
-	$("#stop")				.on("click",	function(event){ event.stopPropagation(); execCmd("pl_stop");				});
-	$("#next")				.on("click",	function(event){ event.stopPropagation(); execCmd("pl_next");				});
-	$("#previous")			.on("click",	function(event){ event.stopPropagation(); execCmd("pl_previous");			});
-	$("#voldd")				.on("click",	function(event){ event.stopPropagation(); setVolume("-100");				});
-	$("#vold")				.on("click",	function(event){ event.stopPropagation(); setVolume("-10");					});
-	$("#volu")				.on("click",	function(event){ event.stopPropagation(); setVolume("+10");					});
-	$("#voluu")				.on("click",	function(event){ event.stopPropagation(); setVolume("+100");				});
-	$("#audioDelayMinus")	.on("click",	function(event){ event.stopPropagation(); changeAudioDelay("-0.01");		});
-	$("#audioDelayPlus")	.on("click",	function(event){ event.stopPropagation(); changeAudioDelay("+0.01");		});
-	$("#audioDelay")		.on("dblclick",	function(event){ event.stopPropagation(); setAudioDelay("0");				});
-	$("#position")			.on("change",	function(event){ event.stopPropagation(); seek($(this).val());		});
-	$("#volume")			.on("change",	function(event){ event.stopPropagation(); setVolume($(this).val());	});
-	$("#aspectratio")		.on("change",	function(event){ event.stopPropagation(); setAR();							});
-	$("#fullscreen")		.on("click",	function(event){ event.stopPropagation(); toggleFullscreen();				});
-	$("#filebrowser span")	.on("click",	function(event){ event.stopPropagation(); $("#filebrowser #files").toggle(); $("#filebrowser img").toggleClass("closed"); $("#filebrowser img").toggleClass("open"); });
-	$("#playlist span")		.on("click",	function(event){ event.stopPropagation(); $("#playlist ul").toggle(); $("#playlist img").toggleClass("closed"); $("#playlist img").toggleClass("open"); });
-	$("#extras span")		.on("click",	function(event){ event.stopPropagation(); $("#extras div").toggle(); $("#extras img").toggleClass("closed"); $("#extras img").toggleClass("open"); });
+	$("#previous")			.on("click",	function(event){ event.stopPropagation(); execCmd("pl_previous");		});
+	$("#m1m")				.on("click",	function(event){ event.stopPropagation(); skip("-60");					});
+	$("#m10s")				.on("click",	function(event){ event.stopPropagation(); skip("-10");					});
+	$("#p10s")				.on("click",	function(event){ event.stopPropagation(); skip("+10");					});
+	$("#p1m")				.on("click",	function(event){ event.stopPropagation(); skip("+60");					});
+	$("#next")				.on("click",	function(event){ event.stopPropagation(); execCmd("pl_next");			});
+	$("#voldd")				.on("click",	function(event){ event.stopPropagation(); setVolume("-100");			});
+	$("#vold")				.on("click",	function(event){ event.stopPropagation(); setVolume("-10");				});
+	$("#volume")			.on("change",	function(event){ event.stopPropagation(); setVolume($(this).val());		});
+	$("#volu")				.on("click",	function(event){ event.stopPropagation(); setVolume("+10");				});
+	$("#voluu")				.on("click",	function(event){ event.stopPropagation(); setVolume("+100");			});
+	$("#play")				.on("click",	function(event){ event.stopPropagation(); execCmd("pl_forceresume");	});
+	$("#pause")				.on("click",	function(event){ event.stopPropagation(); execCmd("pl_forcepause");		});
+	$("#stop")				.on("click",	function(event){ event.stopPropagation(); execCmd("pl_stop");			});
+	$("#fullscreen")		.on("click",	function(event){ event.stopPropagation(); toggleFullscreen();			});
+	$("#audioDelayMinus")	.on("click",	function(event){ event.stopPropagation(); changeAudioDelay("-0.01");	});
+	$("#audioDelayPlus")	.on("click",	function(event){ event.stopPropagation(); changeAudioDelay("+0.01");	});
+	$("#audioDelay")		.on("dblclick",	function(event){ event.stopPropagation(); setAudioDelay("0");			});
+	$("#position")			.on("change",	function(event){ event.stopPropagation(); seek($(this).val());			});
+	$("#aspectratio")		.on("change",	function(event){ event.stopPropagation(); setAR($(this).val());			});
+	$("#filebrowser span")	.on("click",	function(event){ event.stopPropagation(); $("#filebrowser #files").fadeToggle(); $("#filebrowser img").toggleClass("closed"); $("#filebrowser img").toggleClass("open"); });
+	$("#playlist span")		.on("click",	function(event){ event.stopPropagation(); $("#playlist ul").fadeToggle(); $("#playlist img").toggleClass("closed"); $("#playlist img").toggleClass("open"); });
+	$("#extras span")		.on("click",	function(event){ event.stopPropagation(); $("#extras div").fadeToggle(); $("#extras img").toggleClass("closed"); $("#extras img").toggleClass("open"); });
 	$("img#newtab")			.on("click",	function(event){ event.stopPropagation(); chrome.tabs.create({ url: "browse.html" }); });
-	update();
+	refreshStatus();
 	refreshPlaylist();
 	loadDir(localStorage["fbStartDir"]);
 });
