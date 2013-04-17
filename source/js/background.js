@@ -28,14 +28,27 @@ chrome.contextMenus.create({
 				}
 });
 
-// chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-	// if (request.greeting == "hello")
-	// sendResponse({farewell: "goodbye"});
-// });
+chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+	console.log(request);
+	//return true;	//make the $.ajax sendResponse callback work
+});
+
+function execCmd(cmd){
+	console.log("execCmd " + cmd);
+	clearTimeouts();
+	chrome.extension.sendMessage(
+		cmd,
+		function(response){
+			setTimeouts();
+		}
+	);
+}
+
+
 
 function enqueue(url) {
 	var server = "http://" + localStorage["server"] + ":" + localStorage["port"] + "/";
-	url=encodeURIComponent(url);
+	url = encodeURIComponent(url);
 	console.log("enque "+url);
 	$.ajax({
 		url:		server+"requests/status.xml?command=in_enqueue&input="+url,

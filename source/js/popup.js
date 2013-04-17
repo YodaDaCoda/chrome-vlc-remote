@@ -15,7 +15,6 @@ Chrome VLC Remote
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-var server = "http://" + localStorage["server"] + ":" + localStorage["port"] + "/";
 
 var length = "";
 var fullscreen;
@@ -49,13 +48,20 @@ function clearTimeouts() {
 function execCmd(cmd){
 	console.log("execCmd " + cmd);
 	clearTimeouts();
+	// chrome.extension.sendMessage(
+		// cmd,
+		// function(response){
+			// setTimeouts();
+		// }
+	// );
 	$.ajax({
-		url:		server+"requests/status.json?command="+cmd,
-		dataType:	"json",
-		complete:	function() {
-						setTimeouts();
-					}
+	url:		"http://" + localStorage["server"] + ":" + localStorage["port"] + "/requests/status.json?command="+cmd,
+	dataType:	"json",
+	complete:	function(data, status, jqXHR) {
+					setTimeouts();
+				}
 	});
+
 }
 
 
@@ -104,7 +110,7 @@ function enqueue(f){
 function refreshStatus(){
 	console.log("refreshStatus");
 	$.ajax({
-		url:		server+"requests/status.json",
+		url:		"http://" + localStorage["server"] + ":" + localStorage["port"] + "/requests/status.json",
 		dataType:	"json",
 		success:	function (data, status, jqXHR) {
 						processStatus(data);
@@ -128,7 +134,7 @@ function refreshPlaylist() {
 	console.log("refreshPlaylist");
 	$.ajax(
 		{
-		url:		server+"requests/playlist.json",
+		url:		"http://" + localStorage["server"] + ":" + localStorage["port"] + "/requests/playlist.json",
 		dataType:	"json",
 		success:	function (data, status, jqXHR) {
 						processPlaylist(data);
@@ -165,15 +171,11 @@ function processPlaylist(data) {
 
 
 
-
-
-
-
-
 function loadDir(dir){
 	console.log("loadDir "+dir);
 	$.ajax({
-		url:		server+"requests/browse.xml?dir="+dir,
+		url:		"http://" + localStorage["server"] + ":" + localStorage["port"] + "/requests/browse.json?dir="+dir,
+		dataType:	"json",
 		success:	processDir("d"+dir),
 	});
 }
@@ -187,23 +189,12 @@ var processDir = function(dir){
 		} else {
 			$("#"+dirr).append(ul);
 		}
-		$(data).find("element").each( appendFolder(dirr) );
-	};
-}
-
-var appendFolder = function(dir){
-	return function(index, element) {
-		var e = $(element);	//shorthand for effeciency
-		//if (e.attr("name").substr(-2) == "..") {
-		if (index == 0) {
-			return;
-		}
-		var li = $(document.createElement("li"))
-				.text(e.attr("name"))
-				.attr("id", "d"+e.attr("path"))
-				.attr("type", e.attr("type"))
-				.attr("path", e.attr("path"))
-				.attr("uri", e.attr("uri"))
+		for (var i in data.element) {
+			j = data.element[i];	//shorthand
+			if (i > 0) {
+				var li = $(document.createElement("li"))
+				.text(j.name)
+				.attr("id", "d"+j.path)
 				.on("click", function(event) {
 								event.stopPropagation();
 								var t = $(this);	//effeciency
@@ -211,38 +202,42 @@ var appendFolder = function(dir){
 									t.children("ul").remove();
 									t.toggleClass("folder-closed");
 									t.toggleClass("folder-open");
-									return;
 								} else if ( t.hasClass("file-audio") || t.hasClass("file-video") ) {
-									return;
+									//do nothing
+								} else {
+									loadDir(t.attr("path"));
+									t.toggleClass("folder-closed");
+									t.toggleClass("folder-open");
 								}
-								loadDir(t.attr("path"));
-								t.toggleClass("folder-closed");
-								t.toggleClass("folder-open");
 							}
 				)
 				.on("dblclick", function(event) {
-								event.stopPropagation();
-								var t = $(this);	//effeciency
-								if ( t.hasClass("file-audio") || t.hasClass("file-video") ) {
-									enqueue(t.attr("uri"));
+									event.stopPropagation();
+									var t = $(this);	//effeciency
+									if ( t.hasClass("file-audio") || t.hasClass("file-video") ) {
+										enqueue(t.attr("uri"));
+									}
 								}
-							}
-				)
-				;
-		//var ext = e.attr("path").substr(-3).toLowerCase();
-		var ext = e.attr("path").split(".");
-		ext = ext[ext.length-1].toLowerCase();
-		if (e.attr("type") == "dir") {
-			li.addClass("folder-closed");
-		} else if ( ["mp3", "3ga", "aac", "aif", "ape", "fla", "flac", "m4b"].indexOf(ext) != -1) {
-			li.addClass("file-audio");
-		} else if ( ["mkv", "avi", "mp4", "mov", "mpg"].indexOf(ext) != -1 ) {
-			li.addClass("file-video");
+				);
+
+				//li.attr("json", JSON.stringify(j));
+				for (var k in j) {
+					li.attr(k, j[k]);
+				}
+
+				var ext = j.path.split("."); ext = ext[ext.length-1].toLowerCase();
+				if (j.type == "dir") {
+					li.addClass("folder-closed");
+				} else if ( ["mp3", "3ga", "aac", "aif", "ape", "fla", "flac", "m4b"].indexOf(ext) != -1) {
+					li.addClass("file-audio");
+				} else if ( ["mkv", "avi", "mp4", "mov", "mpg"].indexOf(ext) != -1 ) {
+					li.addClass("file-video");
+				}
+				$("ul#"+dirr).append(li);
+			}
 		}
-		$("ul#"+dir).append(li);
 	};
 }
-
 
 
 
@@ -263,7 +258,7 @@ var appendFolder = function(dir){
 //sets the preamp value, must be: -20 => val <= 20
 
 //command=equalizer&band=<band>&val=<gain in dB>)
-//set the gain for a specific band, gain must be: -20 => val <= 20
+//set the gain for a specific band, gain must be: -20 <= val <= 20
 //Bands 0: 60 Hz, 1: 170 Hz, 2: 310 Hz, 3: 600 Hz, 4: 1 kHz, 5: 3 kHz, 6: 6 kHz, 7: 12 kHz , 8: 14 kHz , 9: 16 kHz
 
 
@@ -290,9 +285,9 @@ $(function() {
 	$("#audioDelay")		.on("dblclick",	function(event){ event.stopPropagation(); setAudioDelay("0");			});
 	$("#position")			.on("change",	function(event){ event.stopPropagation(); seek($(this).val());			});
 	$("#aspectratio")		.on("change",	function(event){ event.stopPropagation(); setAR($(this).val());			});
-	$("#filebrowser span")	.on("click",	function(event){ event.stopPropagation(); $("#filebrowser #files").fadeToggle(); $("#filebrowser img").toggleClass("closed"); $("#filebrowser img").toggleClass("open"); });
-	$("#playlist span")		.on("click",	function(event){ event.stopPropagation(); $("#playlist ul").fadeToggle(); $("#playlist img").toggleClass("closed"); $("#playlist img").toggleClass("open"); });
-	$("#extras span")		.on("click",	function(event){ event.stopPropagation(); $("#extras div").fadeToggle(); $("#extras img").toggleClass("closed"); $("#extras img").toggleClass("open"); });
+	$("#filebrowser span")	.on("click",	function(event){ event.stopPropagation(); $("#filebrowser #files")	.fadeToggle(); $("#filebrowser span img")	.toggleClass("closed"); $("#filebrowser span img")	.toggleClass("open"); });
+	$("#playlist span")		.on("click",	function(event){ event.stopPropagation(); $("#playlist ul")			.fadeToggle(); $("#playlist span img")		.toggleClass("closed"); $("#playlist span img")		.toggleClass("open"); });
+	$("#extras span")		.on("click",	function(event){ event.stopPropagation(); $("#extras div")			.fadeToggle(); $("#extras span img")		.toggleClass("closed"); $("#extras span img")		.toggleClass("open"); });
 	$("img#newtab")			.on("click",	function(event){ event.stopPropagation(); chrome.tabs.create({ url: "browse.html" }); });
 	refreshStatus();
 	refreshPlaylist();
