@@ -147,15 +147,18 @@ function refreshStatus(){
 }
 function processStatus(data) {
 	console.log("processStatus");
-	for (var i in ["volume", "position", "audiodelay", "aspectratio"]){
-		$("#"+i).val(data[i]);
+	var a = ["volume", "position", "audiodelay", "aspectratio"];
+	for (var i in a){
+		$("#"+a[i]).val(data[a[i]]);
 	}
-	for (var i in ["time", "length"]){
-		$("#"+i).text(format_time(data[i]));
+	a = ["time", "length"];
+	for (var i in a){
+		$("#"+a[i]).text(format_time(data[a[i]]));
 	}
 	if (data.information) {	//handle case when stopped
 		$("#file").text(data.information.category.meta.filename);
 	}
+
 	var eq = false;
 	for (i in data.audiofilters) {
 		if (data.audiofilters[i] == "equalizer") {
