@@ -22,6 +22,17 @@ var fullscreen;
 var playlistTimeout;
 var updateTimeout;
 
+// Thankyou, stackoverflow
+function Timeout(fn, interval) {
+	var id = setTimeout(fn, interval);
+	setTimeout(function() { this.cleared = true; }, interval);	//hopefully this will clear us after it's been executed
+	this.cleared = false;
+	this.clear = function () {
+		this.cleared = true;
+		clearTimeout(id);
+	};
+}
+
 //format_time - takes time in seconds, returns hh:mm:ss
 function format_time(s) {
 	var hours = Math.floor(s / 3600);
@@ -36,13 +47,17 @@ function format_time(s) {
 function setTimeouts() {
 	//Sometimes status & playlist don't seem to be updated immediately.
 	//wait 150ms before refreshing status & playlist to give VLC time to update internally.
-	updateTimeout = setTimeout(refreshStatus, 150);
-	playlistTimeout = setTimeout(refreshPlaylist, 150);
+	if (updateTimeout.cleared) {
+		updateTimeout = new Timeout(refreshStatus, 150);
+	}
+	if (playlistTimeout.cleared) {
+		playlistTimeout = new Timeout(refreshPlaylist, 150);
+	}
 }
 
 function clearTimeouts() {
-	clearTimeout(playlistTimeout);
-	clearTimeout(updateTimeout);
+	playlistTimeout.clear();
+	updateTimeout.clear();
 }
 
 function execCmd(cmd){
@@ -104,6 +119,18 @@ function enqueue(f){
 	console.log("enqueue " + f);
 	execCmd("in_enqueue&input="+f);
 }
+function enableEq(s) {
+	console.log("enableEq "+s);
+	execCmd("enableeq&val="+(s ? 1 : 0));
+}
+function changeEq(b, v) {
+	console.log("changeEq "+b+" "+v);
+	execCmd("equalizer&band="+b+"&val="+v);
+}
+function setEqPreset(id) {
+	console.log("setEqPreset "+id);
+	execCmd("setpreset&val="+id);
+}
 
 
 
@@ -115,18 +142,45 @@ function refreshStatus(){
 		success:	function (data, status, jqXHR) {
 						processStatus(data);
 					},
-		complete:	function(jqXHR, textStatus) { updateTimeout = setTimeout(refreshStatus, 1000); }
+		complete:	function(jqXHR, textStatus) { updateTimeout = new Timeout(refreshStatus, 1000); }
 	});
 }
 function processStatus(data) {
 	console.log("processStatus");
-	$("#file").text(data.information.category.meta.filename);
-	$("#time").text(format_time(data.time));
-	length = data.length;
-	$("#length").text(format_time(length));
 	for (var i in ["volume", "position", "audiodelay", "aspectratio"]){
 		$("#"+i).val(data[i]);
 	}
+	for (var i in ["time", "length"]){
+		$("#"+i).text(format_time(data[i]));
+	}
+	if (data.information) {	//handle case when stopped
+		$("#file").text(data.information.category.meta.filename);
+	}
+	var eq = false;
+	for (i in data.audiofilters) {
+		if (data.audiofilters[i] == "equalizer") {
+			eq = true;
+		}
+	}
+	if (eq) {
+		$("#eq").fadeIn();
+		$("#equalizer").prop("checked", true);
+	} else {
+		$("#eq").fadeOut();
+		$("#equalizer").prop("checked", false);
+	}
+
+
+	if (data.equalizer.bands) {
+		for (var i in data.equalizer.bands) {
+			var j = i.split("\"")[1];
+			$("#eq"+j).val(data.equalizer.bands[i]);
+			
+		}
+	}
+	//$("#time").text(format_time(data.time));
+	length = data.length;
+	//$("#length").text(format_time(length));
 	fullscreen = data.fullscreen;
 }
 
@@ -139,7 +193,7 @@ function refreshPlaylist() {
 		success:	function (data, status, jqXHR) {
 						processPlaylist(data);
 					},
-		complete:	function(jqXHR, textStatus) { playlistTimeout = setTimeout(refreshPlaylist, 10000); }
+		complete:	function(jqXHR, textStatus) { playlistTimeout = new Timeout(refreshPlaylist, 10000); }
 		}
 	);
 }
@@ -285,9 +339,12 @@ $(function() {
 	$("#audioDelay")		.on("dblclick",	function(event){ event.stopPropagation(); setAudioDelay("0");			});
 	$("#position")			.on("change",	function(event){ event.stopPropagation(); seek($(this).val());			});
 	$("#aspectratio")		.on("change",	function(event){ event.stopPropagation(); setAR($(this).val());			});
-	$("#filebrowser span")	.on("click",	function(event){ event.stopPropagation(); $("#filebrowser #files")	.fadeToggle(); $("#filebrowser span img")	.toggleClass("closed"); $("#filebrowser span img")	.toggleClass("open"); });
-	$("#playlist span")		.on("click",	function(event){ event.stopPropagation(); $("#playlist ul")			.fadeToggle(); $("#playlist span img")		.toggleClass("closed"); $("#playlist span img")		.toggleClass("open"); });
-	$("#extras span")		.on("click",	function(event){ event.stopPropagation(); $("#extras div")			.fadeToggle(); $("#extras span img")		.toggleClass("closed"); $("#extras span img")		.toggleClass("open"); });
+	$("#equalizer")			.on("change",	function(event){ event.stopPropagation(); $("#eq").fadeToggle(); enableEq($(this).is(':checked'));		});
+	$("#eq input")			.on("change",	function(event){ event.stopPropagation(); changeEq($(this).attr("id").substr(-1), $(this).val());		});
+	$("#eqpreset")			.on("change",	function(event){ event.stopPropagation(); setEqPreset($(this).val());		});
+	$("#filebrowser span")	.on("click",	function(event){ event.stopPropagation(); $("#filebrowser > #files")	.fadeToggle(); $("#filebrowser span img")	.toggleClass("closed"); $("#filebrowser span img")	.toggleClass("open"); });
+	$("#playlist span")		.on("click",	function(event){ event.stopPropagation(); $("#playlist > ul")			.fadeToggle(); $("#playlist span img")		.toggleClass("closed"); $("#playlist span img")		.toggleClass("open"); });
+	$("#extras span")		.on("click",	function(event){ event.stopPropagation(); $("#extras > div")			.fadeToggle(); $("#extras span img")		.toggleClass("closed"); $("#extras span img")		.toggleClass("open"); });
 	$("img#newtab")			.on("click",	function(event){ event.stopPropagation(); chrome.tabs.create({ url: "browse.html" }); });
 	refreshStatus();
 	refreshPlaylist();

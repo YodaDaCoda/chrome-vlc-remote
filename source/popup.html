@@ -103,8 +103,97 @@ Chrome VLC Remote
 					<option value="235:100">235:100</option>
 					<option value="239:100">239:100</option>
 				</select>
+				<br />
+				<input type="checkbox" id="equalizer" value=false>Equalizer:</input>
+				<div id="eq">
+					<select id="eqpreset">
+						<option value="0">Flat</option>
+						<option value="1">Classical</option>
+						<option value="2">Club</option>
+						<option value="3">Dance</option>
+						<option value="4">Full bass</option>
+						<option value="5">Full bass and treble</option>
+						<option value="6">Full treble</option>
+						<option value="7">Headphones</option>
+						<option value="8">Large Hall</option>
+						<option value="9">Live</option>
+						<option value="10">Party</option>
+						<option value="11">Pop</option>
+						<option value="12">Reggae</option>
+						<option value="13">Rock</option>
+						<option value="14">Ska</option>
+						<option value="15">Soft</option>
+						<option value="17">Techno</option>
+						<option value="16">Soft rock</option>
+					</select>
+					<table>
+						<tr>
+							<td>
+								60 Hz
+							</td>
+							<td>
+								170 Hz
+							</td>
+							<td>
+								310 Hz
+							</td>
+							<td>
+								600 Hz
+							</td>
+							<td>
+								1 kHz
+							</td>
+							<td>
+								3 kHz
+							</td>
+							<td>
+								6 kHz
+							</td>
+							<td>
+								12 kHz
+							</td>
+							<td>
+								14 kHz
+							</td>
+							<td>
+								16 kHz
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<input type="range" id="eq0" min="-20" max="20" value="0" step="1" class="eq">
+							</td>
+							<td>
+								<input type="range" id="eq1" min="-20" max="20" value="0" step="1" class="eq">
+							</td>
+							<td>
+								<input type="range" id="eq2" min="-20" max="20" value="0" step="1" class="eq">
+							</td>
+							<td>
+								<input type="range" id="eq3" min="-20" max="20" value="0" step="1" class="eq">
+							</td>
+							<td>
+								<input type="range" id="eq4" min="-20" max="20" value="0" step="1" class="eq">
+							</td>
+							<td>
+								<input type="range" id="eq5" min="-20" max="20" value="0" step="1" class="eq">
+							</td>
+							<td>
+								<input type="range" id="eq6" min="-20" max="20" value="0" step="1" class="eq">
+							</td>
+							<td>
+								<input type="range" id="eq7" min="-20" max="20" value="0" step="1" class="eq">
+							</td>
+							<td>
+								<input type="range" id="eq8" min="-20" max="20" value="0" step="1" class="eq">
+							</td>
+							<td>
+								<input type="range" id="eq9" min="-20" max="20" value="0" step="1" class="eq">
+							</td>
+						</tr>
+					</table>
+				</div>
 			</div>
-			<!--<br />-->
 		</div>
 		<div id="playlist">
 			<span><img class="open">Playlist</span>

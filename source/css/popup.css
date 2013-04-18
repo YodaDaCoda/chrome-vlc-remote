@@ -138,20 +138,20 @@ div.centered button {
 	position: absolute;
 	width: 99%;
 	margin: 0px 0px;
-	top: 6px;
+	top: 7px;
 	left: 2px;
 	border-top-left-radius: 2px;
 	border-top-right-radius: 2px;
 	background: rgba(255, 255, 255, 0.25);
 }
 
-input[type="range"] {
+div.slider input[type="range"] {
 	-webkit-appearance: none;
 	background-color: black;
 	height: 2px;
 }
 
-input[type="range"]::-webkit-slider-thumb {
+div.slider input[type="range"]::-webkit-slider-thumb {
 	-webkit-appearance: none;
 	position: relative;
 	top: 1px;
@@ -164,8 +164,8 @@ input[type="range"]::-webkit-slider-thumb {
 	background-image: linear-gradient(0deg, #ebf1f6 0%, #abd3ee 50%, #89c3eb 51%, #d5ebfb 100%);
 }
 
-input[type="range"]:hover ~ .rangevalue,
-input[type="range"]:active ~ .rangevalue {
+div.slider input[type="range"]:hover ~ .rangevalue,
+div.slider input[type="range"]:active ~ .rangevalue {
 	opacity: 1;
 	top: -75px;
 }
@@ -212,11 +212,13 @@ div img.open
 	margin:				0px;
 	border:				0px;
 }
+#playlist {
+	max-height:			500px;
+	overflow:			auto;
+}
 #filebrowser #files {
 	border:				0px;
 	display:			none;
-	width:				100%;
-	min-height:			150px;
 }
 #filebrowser #files,
 #playlist ul,
@@ -227,4 +229,15 @@ div img.open
 img#newtab {
 	content:			url(../img/newtab.png);
 	cursor:				pointer;
+}
+
+
+#eq {
+	display:			none;
+	text-align:			center;
+}
+#eq input[type=range] {
+	-webkit-appearance:	slider-vertical;
+	height:				150px;
+	width:				15px;
 }
