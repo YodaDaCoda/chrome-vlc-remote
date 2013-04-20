@@ -17,6 +17,11 @@ Includes:
 
 CHANGELOG
 
+2013-04-18 v0.7 Equaliser
+* Added equaliser + presets
+* Fixed a bug where multiple ajax requests could be launched before previous ones had completed.
+* Unescape html escape codes in playlist filenames.
+
 2013-04-17 v0.6 JSON
 * Switched from XML to JSON queries. I didn't even realise VLC did JSON.
 * Huge improvements to effeciency and size of code thanks to JSON.

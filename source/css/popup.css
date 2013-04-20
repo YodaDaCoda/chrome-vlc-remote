@@ -225,6 +225,7 @@ div img.open
 #extras div
 {
 	padding-left:		15px;
+	padding-right:		0px;
 }
 img#newtab {
 	content:			url(../img/newtab.png);

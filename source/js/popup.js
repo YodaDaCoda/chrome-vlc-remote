@@ -210,7 +210,7 @@ function processPlaylist(data) {
 		for (var j in p[i]) {
 			li.attr(j, p[i][j]);
 		}
-		li.append(fn);
+		li.text(unescape(fn));
 		if (p[i].current == "current") {
 			li.addClass("current");
 		}
@@ -343,8 +343,8 @@ $(function() {
 	$("#position")			.on("change",	function(event){ event.stopPropagation(); seek($(this).val());			});
 	$("#aspectratio")		.on("change",	function(event){ event.stopPropagation(); setAR($(this).val());			});
 	$("#equalizer")			.on("change",	function(event){ event.stopPropagation(); $("#eq").fadeToggle(); enableEq($(this).is(':checked'));		});
-	$("#eq input")			.on("change",	function(event){ event.stopPropagation(); changeEq($(this).attr("id").substr(-1), $(this).val());		});
-	$("#eqpreset")			.on("change",	function(event){ event.stopPropagation(); setEqPreset($(this).val());		});
+	$("#eq input")			.on("change",	function(event){ event.stopPropagation(); changeEq($(this).attr("id").substr(-1), $(this).val()); $("#eqpreset").val(-1);	});
+	$("#eqpreset")			.on("change",	function(event){ event.stopPropagation(); if ($(this).val() > -1) { setEqPreset($(this).val()); }		});
 	$("#filebrowser span")	.on("click",	function(event){ event.stopPropagation(); $("#filebrowser > #files")	.fadeToggle(); $("#filebrowser span img")	.toggleClass("closed"); $("#filebrowser span img")	.toggleClass("open"); });
 	$("#playlist span")		.on("click",	function(event){ event.stopPropagation(); $("#playlist > ul")			.fadeToggle(); $("#playlist span img")		.toggleClass("closed"); $("#playlist span img")		.toggleClass("open"); });
 	$("#extras span")		.on("click",	function(event){ event.stopPropagation(); $("#extras > div")			.fadeToggle(); $("#extras span img")		.toggleClass("closed"); $("#extras span img")		.toggleClass("open"); });
