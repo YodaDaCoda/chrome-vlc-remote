@@ -85,7 +85,6 @@ var processDir = function(dir){
 }
 function execCmd(cmd){
 	console.log("execCmd " + cmd);
-	clearTimeouts();
 	// chrome.extension.sendMessage(
 		// cmd,
 		// function(response){
@@ -93,11 +92,8 @@ function execCmd(cmd){
 		// }
 	// );
 	$.ajax({
-	url:		"http://" + localStorage["server"] + ":" + localStorage["port"] + "/requests/status.json?command="+cmd,
-	dataType:	"json",
-	complete:	function(data, status, jqXHR) {
-					setTimeouts();
-				}
+		url:		"http://" + localStorage["server"] + ":" + localStorage["port"] + "/requests/status.json?command="+cmd,
+		dataType:	"json",
 	});
 
 }
