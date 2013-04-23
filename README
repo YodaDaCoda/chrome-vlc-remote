@@ -11,6 +11,7 @@ Includes:
 * Adjust volume (slider, large increment or small increment)
 * Toggle fullscreen.
 * Adjust audio delay
+* Equaliser
 * Set aspect ratio
 * Playlist & file browser.
 * Send YouTube videos to VLC from right-click menu.
@@ -18,7 +19,7 @@ Includes:
 CHANGELOG
 
 2013-04-18 v0.7 Equaliser
-* Added equaliser + presets
+* Added equaliser + presets + preamp
 * Fixed a bug where multiple ajax requests could be launched before previous ones had completed.
 * Unescape html escape codes in playlist filenames.
 
