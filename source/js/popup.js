@@ -131,6 +131,10 @@ function setEqPreset(id) {
 	console.log("setEqPreset "+id);
 	execCmd("setpreset&val="+id);
 }
+function setPreamp(p) {
+	console.log("setPreamp "+p);
+	execCmd("preamp&val="+p);
+}
 
 
 
@@ -157,6 +161,9 @@ function processStatus(data) {
 	}
 	if (data.information) {	//handle case when stopped
 		$("#file").text(data.information.category.meta.filename);
+	}
+	if (data.equalizer.preamp) {
+		$("#preamp").val(data.equalizer.preamp);
 	}
 
 	var eq = false;
@@ -342,9 +349,10 @@ $(function() {
 	$("#audioDelay")		.on("dblclick",	function(event){ event.stopPropagation(); setAudioDelay("0");			});
 	$("#position")			.on("change",	function(event){ event.stopPropagation(); seek($(this).val());			});
 	$("#aspectratio")		.on("change",	function(event){ event.stopPropagation(); setAR($(this).val());			});
-	$("#equalizer")			.on("change",	function(event){ event.stopPropagation(); $("#eq").fadeToggle(); enableEq($(this).is(':checked'));		});
-	$("#eq input")			.on("change",	function(event){ event.stopPropagation(); changeEq($(this).attr("id").substr(-1), $(this).val()); $("#eqpreset").val(-1);	});
-	$("#eqpreset")			.on("change",	function(event){ event.stopPropagation(); if ($(this).val() > -1) { setEqPreset($(this).val()); }		});
+	$("#equalizer")			.on("change",	function(event){ event.stopPropagation(); $("div#eq").fadeToggle(); enableEq($(this).is(':checked'));	});
+	$("#preamp")			.on("change",	function(event){ event.stopPropagation(); setPreamp($(this).val()); $("#eqpreset").val(-1);		});
+	$("#eq input[id~=eq]")	.on("change",	function(event){ event.stopPropagation(); changeEq($(this).attr("id").substr(-1), $(this).val()); $("#eqpreset").val(-1);	});
+	$("#eqpreset")			.on("change",	function(event){ event.stopPropagation(); if ($(this).val() > -1) { setEqPreset($(this).val()); }	});
 	$("#filebrowser span")	.on("click",	function(event){ event.stopPropagation(); $("#filebrowser > #files")	.fadeToggle(); $("#filebrowser span img")	.toggleClass("closed"); $("#filebrowser span img")	.toggleClass("open"); });
 	$("#playlist span")		.on("click",	function(event){ event.stopPropagation(); $("#playlist > ul")			.fadeToggle(); $("#playlist span img")		.toggleClass("closed"); $("#playlist span img")		.toggleClass("open"); });
 	$("#extras span")		.on("click",	function(event){ event.stopPropagation(); $("#extras > div")			.fadeToggle(); $("#extras span img")		.toggleClass("closed"); $("#extras span img")		.toggleClass("open"); });
