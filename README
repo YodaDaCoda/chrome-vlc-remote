@@ -18,6 +18,9 @@ Includes:
 
 CHANGELOG
 
+2013-04-25 v0.7.1 Equaliser Fix
+* Fixed equaliser sliders not working.
+
 2013-04-18 v0.7 Equaliser
 * Added equaliser + presets + preamp
 * Fixed a bug where multiple ajax requests could be launched before previous ones had completed.
