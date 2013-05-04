@@ -227,8 +227,12 @@ div img.open
 	padding-left:		15px;
 	padding-right:		0px;
 }
-img#newtab {
+img.newtab {
 	content:			url(../img/newtab.png);
+	cursor:				pointer;
+}
+img.trash {
+	content:			url(../img/trash.png);
 	cursor:				pointer;
 }
 

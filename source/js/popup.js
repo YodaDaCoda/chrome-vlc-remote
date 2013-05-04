@@ -136,6 +136,11 @@ function setPreamp(p) {
 	execCmd("preamp&val="+p);
 }
 
+function emptyPlaylist() {
+	console.log("emptyPlaylist");
+	execCmd("pl_empty");
+}
+
 
 
 function refreshStatus(){
@@ -349,14 +354,15 @@ $(function() {
 	$("#audioDelay")			.on("dblclick",	function(event){ event.stopPropagation(); setAudioDelay("0");			});
 	$("#position")				.on("change",	function(event){ event.stopPropagation(); seek($(this).val());			});
 	$("#aspectratio")			.on("change",	function(event){ event.stopPropagation(); setAR($(this).val());			});
+	$("#emptyPlaylist")			.on("click",	function(event){ event.stopPropagation(); emptyPlaylist();				});
 	$("#equalizer")				.on("change",	function(event){ event.stopPropagation(); $("div#eq").fadeToggle(); enableEq($(this).is(':checked'));	});
 	$("#preamp")				.on("change",	function(event){ event.stopPropagation(); setPreamp($(this).val()); $("#eqpreset").val(-1);		});
 	$("#eq input[id!=preamp]")	.on("change",	function(event){ event.stopPropagation(); changeEq($(this).attr("id").substr(-1), $(this).val()); $("#eqpreset").val(-1);	});
 	$("#eqpreset")				.on("change",	function(event){ event.stopPropagation(); if ($(this).val() > -1) { setEqPreset($(this).val()); }	});
-	$("#filebrowser span")		.on("click",	function(event){ event.stopPropagation(); $("#filebrowser > #files")	.fadeToggle(); $("#filebrowser span img")	.toggleClass("closed"); $("#filebrowser span img")	.toggleClass("open"); });
-	$("#playlist span")			.on("click",	function(event){ event.stopPropagation(); $("#playlist > ul")			.fadeToggle(); $("#playlist span img")		.toggleClass("closed"); $("#playlist span img")		.toggleClass("open"); });
+	$("#filebrowserToggle")		.on("click",	function(event){ event.stopPropagation(); $("#filebrowser > #files")	.fadeToggle(); $("#filebrowser span img")	.toggleClass("closed"); $("#filebrowser span img")	.toggleClass("open"); });
+	$("#togglePlaylist")		.on("click",	function(event){ event.stopPropagation(); $("#playlist > ul")			.fadeToggle(); $("#playlist span img")		.toggleClass("closed"); $("#playlist span img")		.toggleClass("open"); });
 	$("#extras span")			.on("click",	function(event){ event.stopPropagation(); $("#extras > div")			.fadeToggle(); $("#extras span img")		.toggleClass("closed"); $("#extras span img")		.toggleClass("open"); });
-	$("img#newtab")				.on("click",	function(event){ event.stopPropagation(); chrome.tabs.create({ url: "browse.html" }); });
+	$("#bfInNewTab")			.on("click",	function(event){ event.stopPropagation(); chrome.tabs.create({ url: "browse.html" }); });
 	refreshStatus();
 	refreshPlaylist();
 	loadDir(localStorage["fbStartDir"]);
