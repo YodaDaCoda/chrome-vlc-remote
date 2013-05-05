@@ -18,6 +18,9 @@ Includes:
 
 CHANGELOG
 
+2013-05-04 v0.7.2 Empty Playlist
+* Added button to empty playlist
+
 2013-04-25 v0.7.1 Equaliser Fix
 * Fixed equaliser sliders not working.
 
