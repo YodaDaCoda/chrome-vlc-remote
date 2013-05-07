@@ -18,6 +18,10 @@ Includes:
 
 CHANGELOG
 
+2013-05-07 v0.7.3 Minors
+* Slight appearance tweak
+* Allow sending any link to VLC. Doesn't mean VLC will actually play them.
+
 2013-05-04 v0.7.2 Empty Playlist
 * Added button to empty playlist
 
