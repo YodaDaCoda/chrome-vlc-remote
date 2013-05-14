@@ -15,8 +15,16 @@ Includes:
 * Set aspect ratio
 * Playlist & file browser.
 * Send YouTube videos to VLC from right-click menu.
+* Select audio/video/subtitle tracks (experimental controls).
 
 CHANGELOG
+
+2013-05-14 v0.8 Tracks
+* Added option for adjusting polling rate (defaults to 5s).
+* Added option for additional experimental controls.
+* Added audio track, video track, and subtitle track to experimental controls.
+* Tweaked loading/saving of settings.
+* Added tooltips to emptyPlaylist & fbInNewTab buttons.
 
 2013-05-07 v0.7.3 Minors
 * Slight appearance tweak
@@ -73,3 +81,10 @@ CHANGELOG
 * Display playlist
 * Options to set volume, aspect ratio, audio delay, seek
 
+TODO:
+* Make the settings page pretty.
+* Add some more customisable settings.
+* Change the poll time from an input to a select with predefined options.
+* Better loading/saving of settings (add a way to determine defaults - probably through dictionary).
+* Add ?command=addsubtitle&val=<uri> (add srt to currently playing file)
+* Add ?command=pl_delete&id=<id> (delete single item from playlist - not officially supported)

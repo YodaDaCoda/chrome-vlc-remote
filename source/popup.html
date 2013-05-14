@@ -81,7 +81,7 @@ Chrome VLC Remote
 
 		<div class="centered">
 			<button type="button" id="play">Play</button><button type="button" id="pause">Pause</button><button type="button" id="stop">Stop</button>
-			<br />
+			<br>
 			<button type="button" id="fullscreen">Toggle Fullscreen</button>
 		</div>
 
@@ -90,7 +90,7 @@ Chrome VLC Remote
 			<div>
 				Audio Delay (ms):
 				<button type="button" id="audioDelayMinus">-</button><input type="text" id="audiodelay" size=1><button type="button" id="audioDelayPlus">+</button>
-				<br />
+				<br>
 				Aspect ratio:
 				<select id="aspectratio">
 					<option value="default">default</option>
@@ -103,7 +103,26 @@ Chrome VLC Remote
 					<option value="235:100">235:100</option>
 					<option value="239:100">239:100</option>
 				</select>
-				<br />
+				<br>
+				<!--
+				I am able to retrieve details about the different
+				audio/video/subtitle tracks from the JSON response,
+				but there is no way of telling which tracks are
+				currently playing. See VLC bug report:
+				https://trac.videolan.org/vlc/ticket/8633
+				-->
+				<div id="experimental">
+					<b>EXPERIMENTAL CONTROLS</b><br>These work, but support in VLC is lacking.<br>
+					Audio Track:
+					<select id="AudioStream"></select>
+					<br>
+					Video Track:
+					<select id="VideoStream"></select>
+					<br>
+					Subtitle Track:
+					<select id="SubtitleStream"></select>
+					<br>
+				</div>
 				<input type="checkbox" id="equalizer" value=false>Equalizer:</input>
 				<div id="eq">
 					Presets:
@@ -204,13 +223,13 @@ Chrome VLC Remote
 			</div>
 		</div>
 		<div id="playlist">
-			<span id="togglePlaylist" class="shading"><img class="open">Playlist</span><img id="emptyPlaylist" src="../img/trash.png" class="trash">
+			<span id="togglePlaylist" class="shading"><img class="open">Playlist</span><img id="emptyPlaylist" title="Empty playlist" class="trash">
 			<ul id="playlistitems">
 			</ul>
 		</div>
 
 		<div id="filebrowser" >
-			<span id="filebrowserToggle"  class="shading"><img class="closed">File browser</span><img id="fbInNewTab" class="newtab">
+			<span id="filebrowserToggle"  class="shading"><img class="closed">File browser</span><img id="fbInNewTab" title="Open filebrowser in new tab" class="newtab">
 			<div id="files">
 			</div>
 			<!--<iframe src="browse.html"></iframe>-->

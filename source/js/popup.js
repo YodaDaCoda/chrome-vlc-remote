@@ -22,6 +22,8 @@ var fullscreen;
 var playlistTimeout;
 var updateTimeout;
 
+var pollTime;
+
 // Thankyou, stackoverflow
 function Timeout(fn, interval) {
 	var id = setTimeout(fn, interval);
@@ -141,6 +143,21 @@ function emptyPlaylist() {
 	execCmd("pl_empty");
 }
 
+function setAudioTrack(t) {
+	console.log("setAudioTrack "+t);
+	execCmd("audio_track&val="+t);
+}
+
+function setVideoTrack(t) {
+	console.log("setVideoTrack "+t);
+	execCmd("video_track&val="+t);
+}
+
+function setSubtitleTrack(t) {
+	console.log("setSubtitleTrack "+t);
+	execCmd("subtitle_track&val="+t);
+}
+
 
 
 function refreshStatus(){
@@ -151,7 +168,7 @@ function refreshStatus(){
 		success:	function (data, status, jqXHR) {
 						processStatus(data);
 					},
-		complete:	function(jqXHR, textStatus) { updateTimeout = new Timeout(refreshStatus, 1000); }
+		complete:	function(jqXHR, textStatus) { updateTimeout = new Timeout(refreshStatus, pollTime); }
 	});
 }
 function processStatus(data) {
@@ -171,6 +188,7 @@ function processStatus(data) {
 		$("#preamp").val(data.equalizer.preamp);
 	}
 
+	//Equaliser
 	var eq = false;
 	for (i in data.audiofilters) {
 		if (data.audiofilters[i] == "equalizer") {
@@ -184,8 +202,6 @@ function processStatus(data) {
 		$("#eq").fadeOut();
 		$("#equalizer").prop("checked", false);
 	}
-
-
 	if (data.equalizer.bands) {
 		for (var i in data.equalizer.bands) {
 			var j = i.split("\"")[1];
@@ -193,6 +209,19 @@ function processStatus(data) {
 			
 		}
 	}
+
+	//Audio/Video/Subtitle Track Selection
+	var a = ["Audio", "Video", "Subtitle"];
+	for (var j in a) {
+		var avs = "#"+a[j]+"Stream";
+		$(avs).html("<option value=\"-1\"></option><option value=\"-1\">None</option>");
+		for (i in data.information.category) {
+			if (data.information.category[i].Type == a[j]) {
+				$(avs).html( $(avs).html() + "<option value=\""+i.split(" ")[1]+"\">"+i+" - "+data.information.category[i].Language+"</option>" );
+			}
+		}
+	}
+
 	//$("#time").text(format_time(data.time));
 	length = data.length;
 	//$("#length").text(format_time(length));
@@ -363,9 +392,20 @@ $(function() {
 	$("#togglePlaylist")		.on("click",	function(event){ event.stopPropagation(); $("#playlist > ul")			.fadeToggle(); $("#playlist span img")		.toggleClass("closed"); $("#playlist span img")		.toggleClass("open"); });
 	$("#extras span")			.on("click",	function(event){ event.stopPropagation(); $("#extras > div")			.fadeToggle(); $("#extras span img")		.toggleClass("closed"); $("#extras span img")		.toggleClass("open"); });
 	$("#fbInNewTab")			.on("click",	function(event){ event.stopPropagation(); chrome.tabs.create({ url: "browse.html" }); });
+	$("#AudioStream")			.on("change",	function(event){ event.stopPropagation(); setAudioTrack($(this).val());		});
+	$("#VideoStream")			.on("change",	function(event){ event.stopPropagation(); setVideoTrack($(this).val());		});
+	$("#SubtitleStream")		.on("change",	function(event){ event.stopPropagation(); setSubtitleTrack($(this).val());	});
+	if ( localStorage["experimentalControls"] === "true" ) {
+		$("div#experimental").css("display", "block");
+	}
+	pollTime = parseInt(localStorage["pollTime"]);
+	if (isNaN(pollTime)) {
+		pollTime = 5000;
+	}
 	refreshStatus();
 	refreshPlaylist();
 	loadDir(localStorage["fbStartDir"]);
+
 });
 
 // Tooltip stuff that may or may not end up actually being used

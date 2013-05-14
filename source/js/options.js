@@ -19,9 +19,15 @@ function save() {
 	console.log("saving");
 	var settings = $("input");
 	for (var i = 0; i < settings.length; i++) {
-		localStorage[$(settings[i]).attr("id")] = $(settings[i]).val();
-		console.log( $(settings[i]).attr("id") );
-		console.log( $(settings[i]).val() );
+		var value;
+		var si = $(settings[i]);
+		if (si.prop("type") == "checkbox") {
+			value = si.is(':checked');
+		} else {
+			value = si.val();
+		}
+		localStorage[si.attr("id")] = value;
+		console.log( si.attr("id") + " = " + value );
 	}
 
 	$("#status").text("Settings saved.");
@@ -32,9 +38,16 @@ function restore() {
 	console.log("restoring");
 	var settings = $("input");
 	for (var i = 0; i < settings.length; i++) {
-		$(settings[i]).val( localStorage[$(settings[i]).attr("id")] );
-		console.log( $(settings[i]).attr("id") );
-		console.log( localStorage[$(settings[i]).attr("id")] );
+		var si = $(settings[i]);
+		var value = localStorage[si.attr("id")]
+		if (value != undefined) {
+			if (si.prop("type") == "checkbox") {
+				si.prop("checked", (value == "true") );
+			} else {
+				si.val(value);
+			}
+			console.log( si.attr("id") + " = " + value );
+		}
 	}
 }
 $( function() {
