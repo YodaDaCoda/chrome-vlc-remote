@@ -88,3 +88,7 @@ TODO:
 * Better loading/saving of settings (add a way to determine defaults - probably through dictionary).
 * Add ?command=addsubtitle&val=<uri> (add srt to currently playing file)
 * Add ?command=pl_delete&id=<id> (delete single item from playlist - not officially supported)
+* Add ?command=subdelay&val=<delayinseconds> (set subtitle delay)
+* Add ?command=rate&val=<newplaybackrate> (playback rate, must be >0)
+* Add ?command=pl_random/pl_loop/pl_repeat
+* Add ?command=title&val=<val>, ?command=title&val=<val> for supported files
