@@ -49,10 +49,10 @@ function format_time(s) {
 function setTimeouts() {
 	//Sometimes status & playlist don't seem to be updated immediately.
 	//wait 150ms before refreshing status & playlist to give VLC time to update internally.
-	if (updateTimeout.cleared) {
+	if ((typeof updateTimeout == 'undefined') || (updateTimeout.cleared)) {
 		updateTimeout = new Timeout(refreshStatus, 150);
 	}
-	if (playlistTimeout.cleared) {
+	if ((typeof playlistTimeout == 'undefined') || (playlistTimeout.cleared)) {
 		playlistTimeout = new Timeout(refreshPlaylist, 150);
 	}
 }
@@ -402,8 +402,7 @@ $(function() {
 	if (isNaN(pollTime)) {
 		pollTime = 5000;
 	}
-	refreshStatus();
-	refreshPlaylist();
+	setTimeouts();
 	loadDir(localStorage["fbStartDir"]);
 
 });
