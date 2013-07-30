@@ -20,7 +20,7 @@ var length = "";
 var fullscreen;
 
 var playlistTimeout;
-var updateTimeout;
+var statusTimeout;
 
 var currentTrack = "";
 
@@ -49,19 +49,36 @@ function format_time(s) {
 }
 
 function setTimeouts() {
-	//Sometimes status & playlist don't seem to be updated immediately.
-	//wait 150ms before refreshing status & playlist to give VLC time to update internally.
-	if ((typeof updateTimeout == 'undefined') || (updateTimeout.cleared)) {
-		updateTimeout = new Timeout(refreshStatus, 150);
+	clearTimeouts();
+	setPlaylistTimeout();
+	setStatusTimeout();
+}
+//Sometimes status & playlist don't seem to be updated immediately.
+//wait 150ms before refreshing status & playlist to give VLC time to update internally.
+function setStatusTimeout(){
+	if ((typeof statusTimeout == 'undefined') || (statusTimeout.cleared)) {
+		statusTimeout = new Timeout(refreshStatus, 150);
 	}
+}
+function setPlaylistTimeout(){
 	if ((typeof playlistTimeout == 'undefined') || (playlistTimeout.cleared)) {
 		playlistTimeout = new Timeout(refreshPlaylist, 150);
 	}
 }
 
 function clearTimeouts() {
-	playlistTimeout.clear();
-	updateTimeout.clear();
+	clearStatusTimeout();
+	clearPlaylistTimeout();
+}
+function clearStatusTimeout(){
+	if (typeof statusTimeout != 'undefined') {
+		statusTimeout.clear();
+	}
+}
+function clearPlaylistTimeout(){
+	if (typeof playlistTimeout != 'undefined') {
+		playlistTimeout.clear();
+	}
 }
 
 function execCmd(cmd){
@@ -83,7 +100,6 @@ function execCmd(cmd){
 					setTimeouts();
 				}
 	});
-
 }
 
 
@@ -181,7 +197,7 @@ function refreshStatus(){
 		success:	function (data, status, jqXHR) {
 						processStatus(data);
 					},
-		complete:	function(jqXHR, textStatus) { updateTimeout = new Timeout(refreshStatus, pollTime); }
+		complete:	function(jqXHR, textStatus) { statusTimeout = new Timeout(refreshStatus, pollTime); }
 	});
 }
 function processStatus(data) {
@@ -197,7 +213,8 @@ function processStatus(data) {
 	if (data.information) {	//handle case when stopped
 		$("#file").text(data.information.category.meta.filename);
 		if (currentTrack != data.information.category.meta.filename) {
-			refreshPlaylist();
+			clearPlaylistTimeout();
+			setPlaylistTimeout();
 		}
 		currentTrack = data.information.category.meta.filename;
 	}
