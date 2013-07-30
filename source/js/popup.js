@@ -249,9 +249,11 @@ function processStatus(data) {
 	for (var j in a) {
 		var avs = "#"+a[j]+"Stream";
 		$(avs).html("<option value=\"-1\"></option><option value=\"-1\">None</option>");
-		for (i in data.information.category) {
-			if (data.information.category[i].Type == a[j]) {
-				$(avs).html( $(avs).html() + "<option value=\""+i.split(" ")[1]+"\">"+i+" - "+data.information.category[i].Language+"</option>" );
+		if (data.information.category) {
+			for (i in data.information.category) {
+				if (data.information.category[i].Type == a[j]) {
+					$(avs).html( $(avs).html() + "<option value=\""+i.split(" ")[1]+"\">"+i+" - "+data.information.category[i].Language+"</option>" );
+				}
 			}
 		}
 	}
