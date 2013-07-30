@@ -111,8 +111,16 @@ function setAudioDelay(delay) {
 	execCmd("audiodelay&val="+delay);
 }
 function changeAudioDelay(delay) {
-	setAudioDelay((parseFloat($("#audioDelay").val())+parseFloat(delay)).toString())
+	setAudioDelay((parseFloat($("#audiodelay").val())+parseFloat(delay)).toString())
 }
+function setSubtitleDelay(delay) {
+	console.log("subtitle delay "+delay);
+	execCmd("subdelay&val="+delay);
+}
+function changeSubtitleDelay(delay) {
+	setSubtitleDelay((parseFloat($("#subtitledelay").val())+parseFloat(delay)).toString())
+}
+
 function setAR(ar){
 	console.log("setAR "+ar);
 	execCmd("aspectratio&val="+ar);
@@ -173,7 +181,7 @@ function refreshStatus(){
 }
 function processStatus(data) {
 	console.log("processStatus");
-	var a = ["volume", "position", "audiodelay", "aspectratio"];
+	var a = ["volume", "position", "audiodelay", "subtitledelay", "aspectratio"];
 	for (var i in a){
 		$("#"+a[i]).val(data[a[i]]);
 	}
@@ -380,7 +388,10 @@ $(function() {
 	$("#fullscreen")			.on("click",	function(event){ event.stopPropagation(); toggleFullscreen();			});
 	$("#audioDelayMinus")		.on("click",	function(event){ event.stopPropagation(); changeAudioDelay("-0.01");	});
 	$("#audioDelayPlus")		.on("click",	function(event){ event.stopPropagation(); changeAudioDelay("+0.01");	});
-	$("#audioDelay")			.on("dblclick",	function(event){ event.stopPropagation(); setAudioDelay("0");			});
+	$("#audiodelay")			.on("dblclick",	function(event){ event.stopPropagation(); setAudioDelay("0");			});
+	$("#subtitleDelayMinus")	.on("click",	function(event){ event.stopPropagation(); changeSubtitleDelay("-0.01");	});
+	$("#subtitleDelayPlus")		.on("click",	function(event){ event.stopPropagation(); changeSubtitleDelay("+0.01");	});
+	$("#subtitledelay")			.on("dblclick",	function(event){ event.stopPropagation(); setSubtitleDelay("0");		});
 	$("#position")				.on("change",	function(event){ event.stopPropagation(); seek($(this).val());			});
 	$("#aspectratio")			.on("change",	function(event){ event.stopPropagation(); setAR($(this).val());			});
 	$("#emptyPlaylist")			.on("click",	function(event){ event.stopPropagation(); emptyPlaylist();				});
