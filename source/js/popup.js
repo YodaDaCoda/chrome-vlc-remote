@@ -74,6 +74,9 @@ function execCmd(cmd){
 	$.ajax({
 	url:		"http://" + localStorage["server"] + ":" + localStorage["port"] + "/requests/status.json?command="+cmd,
 	dataType:	"json",
+	success:	function (data, status, jqXHR) {
+					processStatus(data);
+				},
 	complete:	function(data, status, jqXHR) {
 					setTimeouts();
 				}
