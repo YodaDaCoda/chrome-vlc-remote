@@ -10,7 +10,7 @@ Includes:
 * Play/Pause/Stop playback
 * Adjust volume (slider, large increment or small increment)
 * Toggle fullscreen.
-* Adjust audio delay
+* Adjust audio/subtitle delay
 * Equaliser
 * Set aspect ratio
 * Playlist & file browser.
@@ -18,6 +18,11 @@ Includes:
 * Select audio/video/subtitle tracks (experimental controls).
 
 CHANGELOG
+
+2013-05-14 v0.8.1 Subs
+* Fixed adjustment of audio delay.
+* Added option for adjusting subtitle delay.
+* Misc improvements in effeciency of requests & GUI updating.
 
 2013-05-14 v0.8 Tracks
 * Added option for adjusting polling rate (defaults to 5s).
@@ -88,7 +93,6 @@ TODO:
 * Better loading/saving of settings (add a way to determine defaults - probably through dictionary).
 * Add ?command=addsubtitle&val=<uri> (add srt to currently playing file)
 * Add ?command=pl_delete&id=<id> (delete single item from playlist - not officially supported)
-* Add ?command=subdelay&val=<delayinseconds> (set subtitle delay)
 * Add ?command=rate&val=<newplaybackrate> (playback rate, must be >0)
 * Add ?command=pl_random/pl_loop/pl_repeat
 * Add ?command=title&val=<val>, ?command=title&val=<val> for supported files
