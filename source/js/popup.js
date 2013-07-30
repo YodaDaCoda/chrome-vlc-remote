@@ -22,6 +22,8 @@ var fullscreen;
 var playlistTimeout;
 var updateTimeout;
 
+var currentTrack = "";
+
 var pollTime;
 
 // Thankyou, stackoverflow
@@ -194,6 +196,10 @@ function processStatus(data) {
 	}
 	if (data.information) {	//handle case when stopped
 		$("#file").text(data.information.category.meta.filename);
+		if (currentTrack != data.information.category.meta.filename) {
+			refreshPlaylist();
+		}
+		currentTrack = data.information.category.meta.filename;
 	}
 	if (data.equalizer.preamp) {
 		$("#preamp").val(data.equalizer.preamp);
