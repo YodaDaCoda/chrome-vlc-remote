@@ -7,7 +7,7 @@ xcopy source dist\source /I /s
 FOR %%G IN (source\js\*.js) DO (
 	echo ### processing %%G
 	echo ### processing %%G >> log.txt
-	java -jar yuicompressor.jar --type js %%G -o dist\%%G -v --charset utf-8 2>>log.txt
+	java -jar compiler-v20130823.jar --language_in=ECMASCRIPT5 --js=%%G --js_output_file=dist\%%G 2>>log.txt
 )
 FOR %%G IN (source\css\*.css) DO (
 	echo ### processing %%G
