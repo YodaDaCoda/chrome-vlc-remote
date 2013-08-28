@@ -19,7 +19,14 @@ Includes:
 
 CHANGELOG
 
-2013-05-14 v0.8.1 Subs
+2013-08-28 v0.9 Permissions
+* Use chrome.permissions for fine grain access, rather than blanket permissions for all URLs. (Credit to Vapier https://github.com/vapier)
+* A couple of small fixes.
+
+2013-05-30 v0.8.2 Fix'd
+* Don't break when VLC is stopped rather than paused.
+
+2013-07-30 v0.8.1 Subs
 * Fixed adjustment of audio delay.
 * Added option for adjusting subtitle delay.
 * Misc improvements in effeciency of requests & GUI updating.
