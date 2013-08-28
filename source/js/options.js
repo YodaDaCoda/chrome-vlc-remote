@@ -40,9 +40,8 @@ function check_and_save() {
 		origins: [url]
 	}, function(granted) {
 		if (!granted) {
-			$("#status").text("You must grant permission to " +
-				url + " for this to work.");
-			$("#status").fadeOut(5000);
+			alert("You must grant permission to " + url + " for these settings to be saved.");
+			$("#status").text("Settings NOT saved.").show().fadeOut(1500);
 			return;
 		}
 
