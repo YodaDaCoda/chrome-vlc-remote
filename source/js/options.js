@@ -29,9 +29,8 @@ function save() {
 		localStorage[si.attr("id")] = value;
 		console.log( si.attr("id") + " = " + value );
 	}
-
-	$("#status").text("Settings saved.");
-	$("#status").fadeOut(750);
+	
+	$("#status").text("Settings saved.").show().fadeOut(750);
 }
 
 function restore() {
