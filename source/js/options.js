@@ -51,9 +51,9 @@ function check_and_save() {
 		// Then revoke existing perms that the user gave us.
 		chrome.permissions.getAll(function(perms) {
 			perms.origins.forEach(function(key) {
-				if (key == url)
+				if (key == url) {
 					return;
-
+				}
 				console.log("revoking access to", key);
 				chrome.permissions.remove({
 					origins: [key],
