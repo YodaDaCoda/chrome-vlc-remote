@@ -33,6 +33,37 @@ function save() {
 	$("#status").text("Settings saved.").show().fadeOut(750);
 }
 
+function check_and_save() {
+	var url = "http://" + $("#server").val() + "/*";
+	console.log("updating permissions for " + url);
+	chrome.permissions.request({
+		origins: [url]
+	}, function(granted) {
+		if (!granted) {
+			$("#status").text("You must grant permission to " +
+				url + " for this to work.");
+			$("#status").fadeOut(5000);
+			return;
+		}
+
+		// First save all the settings.
+		save();
+
+		// Then revoke existing perms that the user gave us.
+		chrome.permissions.getAll(function(perms) {
+			perms.origins.forEach(function(key) {
+				if (key == url)
+					return;
+
+				console.log("revoking access to", key);
+				chrome.permissions.remove({
+					origins: [key],
+				});
+			});
+		});
+	});
+}
+
 function restore() {
 	console.log("restoring");
 	var settings = $("input");
@@ -50,6 +81,6 @@ function restore() {
 	}
 }
 $( function() {
-	$('#save').click(save);
+	$('#save').click(check_and_save);
 	restore();
 });
