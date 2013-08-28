@@ -14,8 +14,10 @@
 		"default_popup": "popup.html"
 	},
 	"permissions": [
-		"<all_urls>",
 		"contextMenus"
+	],
+	"optional_permissions": [
+		"http://*/"
 	],
 	"background" : { 
 		"page": "background.html"
