@@ -308,7 +308,7 @@ function processPlaylist(data) {
 function loadDir(dir){
 	console.log("loadDir "+dir);
 	$.ajax({
-		url:		"http://" + localStorage["server"] + ":" + localStorage["port"] + "/requests/browse.json?dir="+dir,
+		url:		"http://" + localStorage["server"] + ":" + localStorage["port"] + "/requests/browse.json?dir="+encodeURIComponent(dir),
 		dataType:	"json",
 		success:	processDir("d"+dir),
 	});
